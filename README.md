@@ -1,1 +1,3 @@
-# rtl-adventures
+# fpga-adventures
+
+Learning FPGA dev!
