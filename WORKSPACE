@@ -29,17 +29,22 @@ http_archive(
     url = "https://github.com/bazelbuild/rules_proto/releases/download/6.0.2/rules_proto-6.0.2.tar.gz",
 )
 
-rules_hdl_git_hash = "471281d09bfa640567181037029bd0644ced2819"
+# rules_hdl_git_hash = "471281d09bfa640567181037029bd0644ced2819"
 
-rules_hdl_git_sha256 = "88a5f397252a20eaeb9d2b2fd3b8a48175b6b39f8b398a0c9b33d610dd8ef4db"
+# rules_hdl_git_sha256 = "88a5f397252a20eaeb9d2b2fd3b8a48175b6b39f8b398a0c9b33d610dd8ef4db"
 
-http_archive(
+# http_archive(
+#     name = "rules_hdl",
+#     sha256 = rules_hdl_git_sha256,
+#     strip_prefix = "bazel_rules_hdl-%s" % rules_hdl_git_hash,
+#     urls = [
+#         "https://github.com/gtaharaedmonds/bazel_rules_hdl/archive/%s.tar.gz" % rules_hdl_git_hash,
+#     ],
+# )
+
+local_repository(
     name = "rules_hdl",
-    sha256 = rules_hdl_git_sha256,
-    strip_prefix = "bazel_rules_hdl-%s" % rules_hdl_git_hash,
-    urls = [
-        "https://github.com/gtaharaedmonds/bazel_rules_hdl/archive/%s.tar.gz" % rules_hdl_git_hash,
-    ],
+    path = "/home/ubuntu/src/bazel_rules_hdl",
 )
 
 load("@rules_hdl//dependency_support:dependency_support.bzl", rules_hdl_dependency_support = "dependency_support")
