@@ -1,8 +1,7 @@
 module card_7seg (
-    logic [3:0] card_input,
-    logic [6:0] card_decoded
+    input  logic [3:0] card_input,
+    output logic [6:0] card_decoded
 );
-
   localparam logic [3:0] INPUT_BLANK = 4'd0;
   localparam logic [3:0] INPUT_ACE = 4'd1;
   localparam logic [3:0] INPUT_2 = 4'd2;
@@ -28,12 +27,10 @@ module card_7seg (
   localparam logic [6:0] DECODED_7 = 7'b1111000;
   localparam logic [6:0] DECODED_8 = 7'b0000000;
   localparam logic [6:0] DECODED_9 = 7'b0011000;
-  localparam logic [6:0] DECODED_10 = 7'b0111111;
+  localparam logic [6:0] DECODED_10 = 7'b1000000;
   localparam logic [6:0] DECODED_JACK = 7'b1110001;
-  localparam logic [6:0] DECODED_QUEEN = 7'b1100111;
-  localparam logic [6:0] DECODED_KING = 7'b1101110;
-
-  logic [7:0] card_decoded;
+  localparam logic [6:0] DECODED_QUEEN = 7'b0011000;
+  localparam logic [6:0] DECODED_KING = 7'b0001001;
 
   always_comb begin
     case (card_input)
@@ -54,6 +51,4 @@ module card_7seg (
       default: card_decoded = DECODED_BLANK;
     endcase
   end
-
 endmodule
-;

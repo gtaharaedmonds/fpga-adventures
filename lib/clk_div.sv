@@ -1,15 +1,15 @@
-module clock_div #(
+module clk_div #(
     parameter IN_CLKS_PER_HALF_OUT_CLK
 ) (
+    input  logic rst_n,
     input  logic clk_in,
-    input  logic rst,
     output logic clk_out
 );
 
   logic [$clog2(IN_CLKS_PER_HALF_OUT_CLK):0] counter;
 
-  always_ff @(posedge clk_in or posedge rst) begin
-    if (rst) begin
+  always_ff @(posedge clk_in or negedge rst_n) begin
+    if (~rst_n) begin
       counter <= 0;
       clk_out <= 0;
     end else begin
