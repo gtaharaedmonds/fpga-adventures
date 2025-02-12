@@ -26,7 +26,7 @@ module card_7seg (
   localparam logic [6:0] DECODED_6 = 7'b0000010;
   localparam logic [6:0] DECODED_7 = 7'b1111000;
   localparam logic [6:0] DECODED_8 = 7'b0000000;
-  localparam logic [6:0] DECODED_9 = 7'b0011000;
+  localparam logic [6:0] DECODED_9 = 7'b0010000;
   localparam logic [6:0] DECODED_10 = 7'b1000000;
   localparam logic [6:0] DECODED_JACK = 7'b1110001;
   localparam logic [6:0] DECODED_QUEEN = 7'b0011000;

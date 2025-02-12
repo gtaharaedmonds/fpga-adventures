@@ -9,20 +9,22 @@ module nexys_7segs (
   logic clk_7seg;
   logic [2:0] active_7seg;
 
+  genvar i;
+  generate
+    for (i = 0; i < 8; i++) begin
+      assign anodes_7seg[i] = (active_7seg == i) ? 1'b0 : 1'b1;
+    end
+  endgenerate
+
+  assign cathodes_7seg = inputs_7seg[active_7seg];
+
   clk_div #(
-      .IN_CLKS_PER_HALF_OUT_CLK(50000)  // 100 Hz
+      .IN_CLKS_PER_HALF_OUT_CLK(50000)  // 100 Hz?
   ) clk_div_inst (
       .rst_n  (rst_n),
       .clk_in (clk),
       .clk_out(clk_7seg)
   );
-
-  genvar i;
-  generate
-    assign anodes_7seg[i] = (active_7seg == i) ? 1'b0 : 1'b1;
-  endgenerate
-
-  assign cathodes_7seg = inputs_7seg[active_7seg];
 
   always_ff @(posedge clk_7seg or negedge rst_n) begin
     if (~rst_n) begin
