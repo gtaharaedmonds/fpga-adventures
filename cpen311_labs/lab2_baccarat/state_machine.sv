@@ -48,7 +48,13 @@ module state_machine (
       DEAL_DEALER_1: next_state = DEAL_PLAYER_2;
       DEAL_PLAYER_2: next_state = DEAL_DEALER_2;
       DEAL_DEALER_2: begin
-        unique if (player_score == 4'd9 || player_score == 4'd8) begin
+        // Be careful with "unique if": If the conditionals aren't mutually exclusive,
+        // then you need nested MUX2s to handle priorities. However, if you just
+        // write "unique if", I think it'll infer a single MUX (no priorities) and
+        // you'll get buggy behavior from your if block!
+        // (By priorities I mean checking the first conditional first, then the
+        // second if the first is false, then the next, etc.)
+        if (player_score == 4'd9 || player_score == 4'd8) begin
           // Natural! No more cards.
           next_state = SCORE_GAME;
         end else if (player_score <= 5) begin
@@ -63,7 +69,7 @@ module state_machine (
         end
       end
       DEAL_PLAYER_3: begin
-        unique if ((dealer_score == 4'd6 && (player_card_3 >= 4'd6 && player_card_3 <= 4'd7)) ||
+        if ((dealer_score == 4'd6 && (player_card_3 >= 4'd6 && player_card_3 <= 4'd7)) ||
             (dealer_score == 4'd5 && (player_card_3 >= 4'd4 && player_card_3 <= 4'd7)) ||
             (dealer_score == 4'd4 && (player_card_3 >= 4'd2 && player_card_3 <= 4'd7)) ||
             (dealer_score == 4'd3 && (player_card_3 != 4'd8)) ||
@@ -92,7 +98,11 @@ module state_machine (
     deal_player_card = 3'b000;
     deal_dealer_card = 3'b000;
 
-    unique case (current_state)
+    // Set control signals based on the next state, so everything gets updated
+    // in the datapath in sync with state transitions.
+    // (If you instead case'ed on the current state, there'd be a 1-cycle delay
+    // before the datapath gets updated!)
+    case (next_state)
       DEAL_PLAYER_1: begin
         deal_player_card = 3'b001;
       end

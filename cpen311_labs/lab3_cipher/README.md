@@ -1,3 +1,3 @@
-# Lab 3: Encryption/Decryption of ARC4 Cipher
+# Lab 3: Cracking the ARC4 Cipher
 
 WIP

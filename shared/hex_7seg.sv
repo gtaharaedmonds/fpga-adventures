@@ -3,7 +3,7 @@ module hex_7seg (
     output logic [6:0] hex_decoded
 );
   localparam logic [6:0] DECODED_0 = 7'b1000000;
-  localparam logic [6:0] DECODED_1 = 7'b0001000;
+  localparam logic [6:0] DECODED_1 = 7'b1111001;
   localparam logic [6:0] DECODED_2 = 7'b0100100;
   localparam logic [6:0] DECODED_3 = 7'b0110000;
   localparam logic [6:0] DECODED_4 = 7'b0011001;

@@ -18,8 +18,8 @@ verilog_library(
         "constraints.xdc",
     ],
     deps = [
-        "//lib:hex_7seg",
-        "//lib:nexys_7segs",
+        "//shared:hex_7seg",
+        "//shared:nexys_7segs",
     ],
 )
 
