@@ -11,12 +11,14 @@ verilog_library(
         "card_7seg.sv",
         "datapath.sv",
         "random_card.sv",
+        "score_hand.sv",
         "state_machine.sv",
     ],
     data = [
         "constraints.xdc",
     ],
     deps = [
+        "//lib:hex_7seg",
         "//lib:nexys_7segs",
     ],
 )

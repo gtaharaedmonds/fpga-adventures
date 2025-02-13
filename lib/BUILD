@@ -10,6 +10,13 @@ verilog_library(
 )
 
 verilog_library(
+    name = "hex_7seg",
+    srcs = [
+        "hex_7seg.sv",
+    ],
+)
+
+verilog_library(
     name = "nexys_7segs",
     srcs = [
         "nexys_7segs.sv",
