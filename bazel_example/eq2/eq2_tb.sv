@@ -4,7 +4,7 @@ module eq2_tb;
   reg [1:0] test_in0, test_in1;
   wire test_out;
 
-  eq2 uut (
+  eq2 dut (
       .a(test_in0),
       .b(test_in1),
       .aeqb(test_out)
