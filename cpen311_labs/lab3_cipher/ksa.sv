@@ -13,7 +13,8 @@ module ksa (
     output logic ram_wren
 );
   localparam KEY_LENGTH = 3;
-  localparam logic [7:0] KEY[KEY_LENGTH] = {8'h00, 8'h03, 8'h3C};
+  // localparam logic [7:0] KEY[KEY_LENGTH] = {8'h00, 8'h03, 8'h3C};
+  localparam logic [7:0] KEY[KEY_LENGTH] = {8'h1E, 8'h46, 8'h00};
 
   logic [7:0] i, j;
   logic [7:0] si, sj;

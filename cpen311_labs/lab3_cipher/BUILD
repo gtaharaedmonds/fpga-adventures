@@ -17,7 +17,7 @@ verilog_library(
 verilog_library(
     name = "init",
     srcs = [
-        ":init.sv",
+        "init.sv",
     ],
 )
 
@@ -45,7 +45,7 @@ xsim_test(
 verilog_library(
     name = "ksa",
     srcs = [
-        ":ksa.sv",
+        "ksa.sv",
     ],
 )
 
@@ -55,7 +55,7 @@ verilog_library(
         "ksa_tb.sv",
     ],
     data = [
-        ":ksa_expected.data",
+        "ksa_expected.data",
     ],
     deps = [
         ":bram",
@@ -74,14 +74,30 @@ xsim_test(
 )
 
 verilog_library(
+    name = "prga",
+    srcs = [
+        "prga.sv",
+    ],
+)
+
+verilog_library(
+    name = "ct_rom",
+    srcs = [],
+    data = [
+        "ct.coe",
+        "ct_rom.tcl",
+    ],
+)
+
+verilog_library(
     name = "decrypt",
     srcs = [
         "decrypt.sv",
     ],
     deps = [
-        ":bram",
         ":init",
         ":ksa",
+        ":prga",
     ],
 )
 
@@ -92,9 +108,11 @@ verilog_library(
     ],
     data = [
         ":constraints.xdc",
+        ":ct.data",
     ],
     deps = [
         ":bram",
+        ":ct_rom",
         ":decrypt",
         "//shared:hex_7seg",
         "//shared:nexys_7segs",
@@ -116,9 +134,12 @@ verilog_library(
         "decrypt_tb.sv",
     ],
     data = [
-        ":ksa_expected.data",
+        ":ct.data",
+        ":pt.data",
     ],
     deps = [
+        ":bram",
+        ":ct_rom",
         ":decrypt",
     ],
 )

@@ -31,8 +31,8 @@ module decrypt_top (
       .wren(s_wren)
   );
 
-  // RAM for cipher text (encoded message).
-  bram ct_ram (
+  // ROM for cipher text (encoded message).
+  ct_rom ct_rom (
       .*,
       .addr(ct_addr),
       .dout(ct_dout),
