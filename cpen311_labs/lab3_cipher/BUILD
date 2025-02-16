@@ -15,27 +15,27 @@ verilog_library(
 )
 
 verilog_library(
-    name = "init_status",
+    name = "init",
     srcs = [
-        ":init_status.sv",
+        ":init.sv",
     ],
 )
 
 verilog_library(
-    name = "init_status_tb",
+    name = "init_tb",
     srcs = [
-        "init_status_tb.sv",
+        "init_tb.sv",
     ],
     deps = [
         ":bram",
-        ":init_status",
+        ":init",
     ],
 )
 
 xsim_test(
-    name = "init_status_test",
-    module = ":init_status_tb",
-    module_top = "init_status_tb",
+    name = "init_test",
+    module = ":init_tb",
+    module_top = "init_tb",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
     with_waveform = True,
@@ -55,7 +55,7 @@ verilog_library(
         "ksa_tb.sv",
     ],
     data = [
-        ":ksa_expected.hex",
+        ":ksa_expected.data",
     ],
     deps = [
         ":bram",
@@ -80,7 +80,7 @@ verilog_library(
     ],
     deps = [
         ":bram",
-        ":init_status",
+        ":init",
         ":ksa",
     ],
 )
@@ -115,16 +115,20 @@ verilog_library(
     srcs = [
         "decrypt_tb.sv",
     ],
+    data = [
+        ":ksa_expected.data",
+    ],
     deps = [
         ":decrypt",
     ],
 )
 
-vivado_create_project(
-    name = "decrypt_project",
+xsim_test(
+    name = "decrypt_test",
     module = ":decrypt_tb",
     module_top = "decrypt_tb",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
+    with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )

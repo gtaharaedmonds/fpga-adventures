@@ -118,7 +118,7 @@ module decrypt (
 
 
   // Step 1: Initialize status RAM.
-  init_status init_status_inst (
+  init init_inst (
       .*,
       .rdy(init_rdy),
       .en(init_en),

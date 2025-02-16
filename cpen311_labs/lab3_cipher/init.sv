@@ -1,4 +1,4 @@
-module init_status (
+module init (
     input logic rst_n,
     input logic clk,
 

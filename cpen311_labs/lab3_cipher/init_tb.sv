@@ -1,13 +1,13 @@
 `timescale 1 ns / 10 ps
 
-module init_status_tb;
+module init_tb;
   logic rst_n, clk, dut_clk;
   logic rdy, en;
   logic [7:0] ram_addr, ram_dout, ram_din;
   logic ram_wren;
   logic init_done;
 
-  init_status dut (
+  init dut (
       .clk(dut_clk),
       .*
   );
