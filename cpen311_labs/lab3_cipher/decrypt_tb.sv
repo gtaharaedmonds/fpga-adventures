@@ -3,8 +3,8 @@
 module decrypt_tb;
   logic rst_n, clk, dut_clk;
   logic rdy, en;
-  logic [7:0] ram_addr, ram_dout, ram_din;
-  logic ram_wren;
+  logic [7:0] s_addr, s_dout, s_din;
+  logic s_wren;
   logic [7:0] debug_addr, debug_data;
   logic ksa_done;
 
@@ -12,13 +12,13 @@ module decrypt_tb;
       .clk(dut_clk),
       .*
   );
-  bram status_ram (
+  bram s_ram (
       .*,
-      .addr(ram_addr),
-      .dout(ram_dout),
-      .din (ram_din),
+      .addr(s_addr),
+      .dout(s_dout),
+      .din (s_din),
       .en  (1),
-      .wren(ram_wren)
+      .wren(s_wren)
   );
 
   logic [7:0] expected[256];
@@ -51,12 +51,12 @@ module decrypt_tb;
 
     // Assert that memory has expected values.
     for (int i = 0; i < 256; i++) begin
-      ram_addr = i;
-      ram_wren = 0;
+      s_addr = i;
+      s_wren = 0;
       #10;
 
-      assert (ram_dout == expected[i])
-      else $error("BAD! ram_dout = %h, i = %h", ram_dout, expected[i]);
+      assert (s_dout == expected[i])
+      else $error("BAD! s_dout = %h, i = %h", s_dout, expected[i]);
     end
 
     // Stop sim.

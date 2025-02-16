@@ -11,7 +11,7 @@ module init_tb;
       .clk(dut_clk),
       .*
   );
-  bram status_ram (
+  bram s_ram (
       .*,
       .addr(ram_addr),
       .dout(ram_dout),

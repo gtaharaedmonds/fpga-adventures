@@ -3,10 +3,10 @@ module decrypt (
     input logic clk,
 
     // RAM I/O.
-    output logic [7:0] ram_addr,
-    output logic [7:0] ram_din,
-    input logic [7:0] ram_dout,
-    output logic ram_wren,
+    output logic [7:0] s_addr,
+    output logic [7:0] s_din,
+    input logic [7:0] s_dout,
+    output logic s_wren,
 
     // Debug signals.
     input  logic [7:0] debug_addr,
@@ -99,20 +99,20 @@ module decrypt (
   // Otherwise, connected to init or KSA module depending on current step.
   always_comb begin
     if (current_state == RESET || current_state == INIT_WAIT || current_state == INIT_RUNNING) begin
-      ram_addr = init_addr;
-      ram_din = init_din;
-      ram_wren = init_wren;
+      s_addr = init_addr;
+      s_din = init_din;
+      s_wren = init_wren;
       debug_data = 8'hFF;
     end else if (current_state == KSA_WAIT || current_state == KSA_RUNNING) begin
-      ram_addr = ksa_addr;
-      ram_din = ksa_din;
-      ram_wren = ksa_wren;
+      s_addr = ksa_addr;
+      s_din = ksa_din;
+      s_wren = ksa_wren;
       debug_data = 8'hFF;
     end else begin
-      ram_addr = debug_addr;
-      ram_din = 0;
-      ram_wren = 0;
-      debug_data = ram_dout;
+      s_addr = debug_addr;
+      s_din = 0;
+      s_wren = 0;
+      debug_data = s_dout;
     end
   end
 
@@ -123,7 +123,7 @@ module decrypt (
       .rdy(init_rdy),
       .en(init_en),
       .ram_addr(init_addr),
-      .ram_dout(ram_dout),
+      .ram_dout(s_dout),
       .ram_din(init_din),
       .ram_wren(init_wren)
   );
@@ -134,7 +134,7 @@ module decrypt (
       .rdy(ksa_rdy),
       .en(ksa_en),
       .ram_addr(ksa_addr),
-      .ram_dout(ram_dout),
+      .ram_dout(s_dout),
       .ram_din(ksa_din),
       .ram_wren(ksa_wren)
   );
