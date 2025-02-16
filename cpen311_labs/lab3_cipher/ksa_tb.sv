@@ -1,14 +1,13 @@
 `timescale 1 ns / 10 ps
 
 module ksa_tb;
-  logic rst_n, clk, dut_clk;
+  logic rst_n, clk;
   logic rdy, en;
   logic [7:0] ram_addr, ram_dout, ram_din;
   logic ram_wren;
-  logic init_done, ksa_done;
 
   ksa dut (
-      .clk(dut_clk),
+      .key({8'h00, 8'h03, 8'h3C}),
       .*
   );
   bram s_ram (
@@ -30,17 +29,8 @@ module ksa_tb;
   initial clk = 0;
   always #5 clk = ~clk;  // 10ns period (100MHz)
 
-  // Generate DUT clock. Follows the master clock while enabled.
-  // (Hacky way to disable DUT)
-  always_comb begin
-    if (~init_done || ksa_done) dut_clk = 0;
-    else dut_clk = clk;
-  end
-
   initial begin
     // Reset DUT.
-    init_done = 0;
-    ksa_done = 0;
     rst_n = 0;
     #10;
     rst_n = 1;
@@ -53,9 +43,6 @@ module ksa_tb;
       #10;
     end
 
-    init_done = 1;
-    #20;
-
     wait (rdy == 1);
     en = 1;
     wait (rdy == 0);
@@ -63,7 +50,6 @@ module ksa_tb;
 
     // Simulate and see what happens!
     wait (rdy == 1);
-    ksa_done = 1;
     #10;
 
     // Assert that memory has expected values.

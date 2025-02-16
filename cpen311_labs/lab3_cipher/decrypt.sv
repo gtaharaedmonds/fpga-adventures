@@ -1,29 +1,13 @@
 module decrypt (
     input logic rst_n,
     input logic clk,
-
-    // Status RAM I/O.
-    output logic [7:0] s_addr,
-    output logic [7:0] s_din,
-    input logic [7:0] s_dout,
-    output logic s_wren,
-
-    // Cipher text RAM I/O.
-    output logic [7:0] ct_addr,
-    output logic [7:0] ct_din,
-    input logic [7:0] ct_dout,
-    output logic ct_wren,
-
-    // Plain text RAM I/O.
-    output logic [7:0] pt_addr,
-    output logic [7:0] pt_din,
-    input logic [7:0] pt_dout,
-    output logic pt_wren,
+    input logic [7:0] key[3],
 
     // Debug signals.
     input  logic [7:0] debug_addr,
     output logic [7:0] debug_data
 );
+
   logic init_rdy, init_en;
   logic [7:0] init_addr, init_din;
   logic init_wren;
@@ -35,6 +19,12 @@ module decrypt (
   logic prga_rdy, prga_en;
   logic [7:0] prga_addr, prga_din;
   logic prga_wren;
+
+  logic [7:0] s_addr, s_din, s_dout;
+  logic s_wren;
+  logic [7:0] ct_addr, ct_dout;
+  logic [7:0] pt_addr, prga_pt_addr, pt_din, pt_dout;
+  logic pt_wren;
 
   typedef enum logic [3:0] {
     RESET,
@@ -51,11 +41,8 @@ module decrypt (
 
   // Update state machine.
   always_ff @(posedge clk or negedge rst_n) begin
-    if (~rst_n) begin
-      current_state <= RESET;
-    end else begin
-      current_state <= next_state;
-    end
+    if (~rst_n) current_state <= RESET;
+    else current_state <= next_state;
   end
 
   // Next-state logic.
@@ -79,6 +66,7 @@ module decrypt (
   always_comb begin
     init_en = 0;
     ksa_en  = 0;
+    prga_en = 0;
 
     case (current_state)
       RESET: begin
@@ -111,31 +99,30 @@ module decrypt (
     endcase
   end
 
-  // If done, RAM is connected to debug signals to inspect memory.
-  // Otherwise, connected to the current step's module.
+  // Status RAM connected to the current step's module.
   always_comb begin
     if (current_state == RESET || current_state == INIT_WAIT || current_state == INIT_RUNNING) begin
       s_addr = init_addr;
-      s_din = init_din;
+      s_din  = init_din;
       s_wren = init_wren;
-      debug_data = 8'hFF;
     end else if (current_state == KSA_WAIT || current_state == KSA_RUNNING) begin
       s_addr = ksa_addr;
-      s_din = ksa_din;
+      s_din  = ksa_din;
       s_wren = ksa_wren;
-      debug_data = 8'hFF;
     end else if (current_state == PRGA_WAIT || current_state == PRGA_RUNNING) begin
       s_addr = prga_addr;
-      s_din = prga_din;
+      s_din  = prga_din;
       s_wren = prga_wren;
-      debug_data = 8'hFF;
     end else begin
-      s_addr = debug_addr;
-      s_din = 0;
+      s_addr = 0;
+      s_din  = 0;
       s_wren = 0;
-      debug_data = s_dout;
     end
   end
+
+  // If done, RAM is connected to debug signals to inspect memory.
+  assign pt_addr = (current_state == DONE) ? debug_addr : prga_pt_addr;
+  assign debug_data = (current_state == DONE) ? pt_dout : 8'hFF;
 
   // Step 1: Initialize status RAM.
   init init_inst (
@@ -143,7 +130,6 @@ module decrypt (
       .rdy(init_rdy),
       .en(init_en),
       .ram_addr(init_addr),
-      .ram_dout(s_dout),
       .ram_din(init_din),
       .ram_wren(init_wren)
   );
@@ -162,6 +148,7 @@ module decrypt (
   // Step 3: Run pseudo-random generation algorithm (actually does the decoding!)
   prga prga_inst (
       .*,
+      .pt_addr(prga_pt_addr),
       .rdy(prga_rdy),
       .en(prga_en),
       .s_addr(prga_addr),
@@ -170,4 +157,33 @@ module decrypt (
       .s_wren(prga_wren)
   );
 
+  // RAM for ARC4 status.
+  bram s_ram (
+      .*,
+      .addr(s_addr),
+      .dout(s_dout),
+      .din (s_din),
+      .en  (1),
+      .wren(s_wren)
+  );
+
+  // ROM for cipher text (encoded message).
+  ct_rom ct_rom (
+      .*,
+      .addr(ct_addr),
+      .dout(ct_dout),
+      .din (0),
+      .en  (1),
+      .wren(0)
+  );
+
+  // RAM for plain text (decoded message).
+  bram pt_ram (
+      .*,
+      .addr(pt_addr),
+      .dout(pt_dout),
+      .din (pt_din),
+      .en  (1),
+      .wren(pt_wren)
+  );
 endmodule

@@ -1,7 +1,6 @@
 load("@rules_hdl//verilog:defs.bzl", "verilog_library")
 load(
     "@rules_hdl//vivado:defs.bzl",
-    "vivado_create_project",
     "vivado_flow",
     "xsim_test",
 )
@@ -108,7 +107,6 @@ verilog_library(
     ],
     data = [
         ":constraints.xdc",
-        ":ct.data",
     ],
     deps = [
         ":bram",
@@ -134,7 +132,6 @@ verilog_library(
         "decrypt_tb.sv",
     ],
     data = [
-        ":ct.data",
         ":pt.data",
     ],
     deps = [

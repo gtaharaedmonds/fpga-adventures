@@ -10,11 +10,12 @@ module ksa (
     output logic [7:0] ram_addr,
     input logic [7:0] ram_dout,
     output logic [7:0] ram_din,
-    output logic ram_wren
+    output logic ram_wren,
+
+    // Super secret key!
+    input logic [7:0] key[KEY_LENGTH]
 );
   localparam KEY_LENGTH = 3;
-  // localparam logic [7:0] KEY[KEY_LENGTH] = {8'h00, 8'h03, 8'h3C};
-  localparam logic [7:0] KEY[KEY_LENGTH] = {8'h1E, 8'h46, 8'h00};
 
   logic [7:0] i, j;
   logic [7:0] si, sj;
@@ -29,7 +30,8 @@ module ksa (
     FETCH_SJ,
     COPY_SJ,
     STORE_SI,
-    STORE_SJ
+    STORE_SJ,
+    DONE
   } ksa_step_t;
 
   ksa_step_t current_step, next_step;
@@ -47,19 +49,20 @@ module ksa (
       RESET: begin
         if (en) next_step = ADDR_SI;
       end
-      ADDR_SI:  next_step = FETCH_SI;
+      ADDR_SI: next_step = FETCH_SI;
       FETCH_SI: next_step = COPY_SI;
-      COPY_SI:  next_step = UPDATE_J;
+      COPY_SI: next_step = UPDATE_J;
       UPDATE_J: next_step = ADDR_SJ;
-      ADDR_SJ:  next_step = FETCH_SJ;
+      ADDR_SJ: next_step = FETCH_SJ;
       FETCH_SJ: next_step = COPY_SJ;
-      COPY_SJ:  next_step = STORE_SI;
+      COPY_SJ: next_step = STORE_SI;
       STORE_SI: next_step = STORE_SJ;
       STORE_SJ: begin
-        if (i == 0) next_step = RESET;
+        if (i == 0) next_step = DONE;
         else next_step = ADDR_SI;
       end
-      default:  next_step = RESET;
+      DONE: next_step = RESET;
+      default: next_step = RESET;
     endcase
   end
 
@@ -67,25 +70,20 @@ module ksa (
   // that's why they all are.
   always_ff @(posedge clk or negedge rst_n) begin
     if (~rst_n) begin
-      ram_addr <= 0;
-      ram_wren <= 0;
-      ram_din <= 0;
-      i <= 0;
-      j <= 0;
+      i  <= 0;
+      j  <= 0;
       si <= 0;
       sj <= 0;
     end else begin
       case (next_step)
         RESET: begin
-          ram_addr <= 0;
-          ram_wren <= 0;
-          ram_din <= 0;
-          i <= 0;
-          j <= 0;
+          i  <= 0;
+          j  <= 0;
           si <= 0;
           sj <= 0;
         end
         ADDR_SI: begin
+          ram_din  <= 0;
           ram_addr <= i;
           ram_wren <= 0;
         end
@@ -96,7 +94,7 @@ module ksa (
           si <= ram_dout;
         end
         UPDATE_J: begin
-          j <= (j + si + KEY[i%KEY_LENGTH]) % 256;
+          j <= (j + si + key[i%KEY_LENGTH]) % 256;
         end
         ADDR_SJ: begin
           ram_addr <= j;
@@ -119,14 +117,11 @@ module ksa (
           ram_din <= sj;
           i <= i + 1;
         end
-        default: begin
-          ram_addr <= 0;
+        DONE: begin
           ram_wren <= 0;
-          ram_din <= 0;
-          i <= 0;
-          j <= 0;
-          si <= 0;
-          sj <= 0;
+        end
+        default: begin
+          // No-op.
         end
       endcase
     end

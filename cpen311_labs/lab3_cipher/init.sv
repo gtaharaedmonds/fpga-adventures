@@ -8,7 +8,6 @@ module init (
 
     // RAM port I/O.
     output logic [7:0] ram_addr,
-    input logic [7:0] ram_dout,
     output logic [7:0] ram_din,
     output logic ram_wren
 );

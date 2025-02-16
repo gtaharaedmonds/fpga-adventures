@@ -7,48 +7,12 @@ module decrypt_top (
     output logic [7:0] anodes_7seg,
     output logic [6:0] cathodes_7seg
 );
-  logic [7:0] s_addr, s_din, s_dout;
-  logic s_wren;
-
-  logic [7:0] ct_addr, ct_din, ct_dout;
-  logic ct_wren;
-
-  logic [7:0] pt_addr, pt_din, pt_dout;
-  logic pt_wren;
-
   logic [7:0] debug_data;
   logic [6:0] debug_7segs[8];
 
-  decrypt decrypt_inst (.*);
-
-  // RAM for ARC4 status.
-  bram s_ram (
+  decrypt decrypt_inst (
       .*,
-      .addr(s_addr),
-      .dout(s_dout),
-      .din (s_din),
-      .en  (1),
-      .wren(s_wren)
-  );
-
-  // ROM for cipher text (encoded message).
-  ct_rom ct_rom (
-      .*,
-      .addr(ct_addr),
-      .dout(ct_dout),
-      .din (ct_din),
-      .en  (1),
-      .wren(ct_wren)
-  );
-
-  // RAM for plain text (decoded message).
-  bram pt_ram (
-      .*,
-      .addr(pt_addr),
-      .dout(pt_dout),
-      .din (pt_din),
-      .en  (1),
-      .wren(pt_wren)
+      .key({8'h1E, 8'h46, 8'h00})
   );
 
   // Decode MSB.
@@ -74,5 +38,4 @@ module decrypt_top (
       .*,
       .inputs_7seg(debug_7segs)
   );
-
 endmodule

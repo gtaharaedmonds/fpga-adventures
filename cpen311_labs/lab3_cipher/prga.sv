@@ -14,13 +14,10 @@ module prga (
 
     // Cipher text RAM I/O.
     output logic [7:0] ct_addr,
-    input logic [7:0] ct_dout,
-    output logic [7:0] ct_din,
-    output logic ct_wren,
+    input  logic [7:0] ct_dout,
 
     // Plain text RAM I/O.
     output logic [7:0] pt_addr,
-    input logic [7:0] pt_dout,
     output logic [7:0] pt_din,
     output logic pt_wren
 );
@@ -70,7 +67,6 @@ module prga (
   } prga_step_t;
 
   prga_step_t current_step, next_step;
-
   logic [7:0] i, j, k, len, si, sj, pad;
 
   always_ff @(posedge clk or negedge rst_n) begin
@@ -94,37 +90,36 @@ module prga (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (~rst_n) begin
-      i <= 0;
-      j <= 0;
-      k <= 0;
+      i   <= 0;
+      j   <= 0;
+      k   <= 0;
 
       len <= 0;
-      si <= 0;
-      sj <= 0;
+      si  <= 0;
+      sj  <= 0;
       pad <= 0;
-
-      ct_addr <= 0;
-      ct_wren <= 0;
-      ct_din <= 0;
-
-      pt_addr <= 0;
-      pt_wren <= 0;
-      pt_din <= 0;
-
-      s_addr <= 0;
-      s_wren <= 0;
-      s_din <= 0;
-
     end else begin
       case (next_step)
         RESET: begin
-          i <= 0;
-          j <= 0;
-          k <= 0;
+          i   <= 0;
+          j   <= 0;
+          k   <= 0;
+
+          len <= 0;
+          si  <= 0;
+          sj  <= 0;
+          pad <= 0;
         end
         ADDR_LENGTH: begin
           ct_addr <= 0;
-          ct_wren <= 0;
+
+          pt_addr <= 0;
+          pt_wren <= 0;
+          pt_din  <= 0;
+
+          s_addr  <= 0;
+          s_wren  <= 0;
+          s_din   <= 0;
         end
         FETCH_LENGTH: begin
           // No-op - RAM has 1-cycle read delay.
@@ -189,7 +184,6 @@ module prga (
         ADDR_CT: begin
           // First char is length, so have to add 1.
           ct_addr <= k + 1;
-          ct_wren <= 0;
         end
         FETCH_CT: begin
           // No-op - RAM has 1-cycle read delay.
@@ -199,7 +193,6 @@ module prga (
           pt_addr <= k + 1;
           pt_din <= pad ^ ct_dout;
           pt_wren <= 1;
-
           k <= k + 1;
         end
         DONE: begin
@@ -213,4 +206,5 @@ module prga (
   end
 
   assign rdy = (current_step == RESET);
+
 endmodule
