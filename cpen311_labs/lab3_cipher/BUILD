@@ -36,7 +36,6 @@ xsim_test(
     module = ":init_tb",
     module_top = "init_tb",
     part_number = "xc7a100tcsg324-1",
-    tags = ["manual"],
     with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )
@@ -67,7 +66,6 @@ xsim_test(
     module = ":ksa_tb",
     module_top = "ksa_tb",
     part_number = "xc7a100tcsg324-1",
-    tags = ["manual"],
     with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )
@@ -146,7 +144,6 @@ xsim_test(
     module = ":decrypt_tb",
     module_top = "decrypt_tb",
     part_number = "xc7a100tcsg324-1",
-    tags = ["manual"],
     with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )

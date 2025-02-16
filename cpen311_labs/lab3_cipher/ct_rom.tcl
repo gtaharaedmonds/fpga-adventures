@@ -202,10 +202,12 @@ proc create_root_design { parentCell } {
   set en [ create_bd_port -dir I -type data en ]
   set wren [ create_bd_port -dir I -type data wren ]
 
+  set coe_path [file normalize [file join $script_folder "ct.coe"]]
+
   # Create instance: blk_mem_gen_0, and set properties
   set blk_mem_gen_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:blk_mem_gen:8.4 blk_mem_gen_0 ]
   set_property -dict [list \
-    CONFIG.Coe_File {/home/ubuntu/src/fpga-adventures/cpen311_labs/lab3_cipher/ct.coe} \
+    CONFIG.Coe_File "$coe_path" \
     CONFIG.Fill_Remaining_Memory_Locations {true} \
     CONFIG.Load_Init_File {true} \
     CONFIG.Register_PortA_Output_of_Memory_Primitives {false} \
