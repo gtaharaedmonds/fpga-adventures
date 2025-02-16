@@ -19,6 +19,7 @@ module ksa_tb;
       .en  (1),
       .wren(ram_wren)
   );
+  logic [7:0] expected[256];
 
   // Generate clock.
   initial clk = 0;
@@ -31,7 +32,11 @@ module ksa_tb;
     else dut_clk = clk;
   end
 
+
   initial begin
+    $readmemh("../../../../project_1.srcs/sources_1/imports/lab3_cipher/ksa_expected.hex",
+              expected);
+
     // Reset DUT.
     init_done = 0;
     ksa_done = 0;
@@ -66,8 +71,8 @@ module ksa_tb;
       ram_wren = 0;
       #10;
 
-      // assert (ram_dout == i)
-      // else $error("BAD! ram_dout = %h, i = %h", ram_dout, i);
+      assert (ram_dout == expected[i])
+      else $error("BAD! ram_dout = %h, i = %h", ram_dout, expected[i]);
     end
 
     // Stop sim.

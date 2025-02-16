@@ -3,6 +3,7 @@ load(
     "@rules_hdl//vivado:defs.bzl",
     "vivado_create_project",
     "vivado_flow",
+    "xsim_test",
 )
 
 verilog_library(
@@ -31,12 +32,13 @@ verilog_library(
     ],
 )
 
-vivado_create_project(
-    name = "init_status_project",
+xsim_test(
+    name = "init_status_test",
     module = ":init_status_tb",
     module_top = "init_status_tb",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
+    with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )
 
@@ -52,18 +54,22 @@ verilog_library(
     srcs = [
         "ksa_tb.sv",
     ],
+    data = [
+        ":ksa_expected.hex",
+    ],
     deps = [
         ":bram",
         ":ksa",
     ],
 )
 
-vivado_create_project(
-    name = "ksa_project",
+xsim_test(
+    name = "ksa_test",
     module = ":ksa_tb",
     module_top = "ksa_tb",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
+    with_waveform = True,
     xilinx_env = "//:xilinx_env.sh",
 )
 
@@ -72,13 +78,24 @@ verilog_library(
     srcs = [
         "decrypt.sv",
     ],
+    deps = [
+        ":bram",
+        ":init_status",
+        ":ksa",
+    ],
+)
+
+verilog_library(
+    name = "decrypt_top",
+    srcs = [
+        "decrypt_top.sv",
+    ],
     data = [
         ":constraints.xdc",
     ],
     deps = [
         ":bram",
-        ":init_status",
-        ":ksa",
+        ":decrypt",
         "//shared:hex_7seg",
         "//shared:nexys_7segs",
     ],
@@ -86,8 +103,8 @@ verilog_library(
 
 vivado_flow(
     name = "decrypt_vivado",
-    module = ":decrypt",
-    module_top = "decrypt",
+    module = ":decrypt_top",
+    module_top = "decrypt_top",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
     xilinx_env = "//:xilinx_env.sh",
