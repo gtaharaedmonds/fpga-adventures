@@ -37,7 +37,7 @@ xsim_test(
     module_top = "init_tb",
     part_number = "xc7a100tcsg324-1",
     with_waveform = True,
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )
 
 verilog_library(
@@ -67,7 +67,7 @@ xsim_test(
     module_top = "ksa_tb",
     part_number = "xc7a100tcsg324-1",
     with_waveform = True,
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )
 
 verilog_library(
@@ -121,7 +121,7 @@ vivado_flow(
     module_top = "decrypt_top",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )
 
 verilog_library(
@@ -145,5 +145,5 @@ xsim_test(
     module_top = "decrypt_tb",
     part_number = "xc7a100tcsg324-1",
     with_waveform = True,
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )

@@ -32,7 +32,7 @@ vivado_flow(
     module_top = "eq2_top",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )
 
 vivado_create_project(
@@ -41,5 +41,5 @@ vivado_create_project(
     module_top = "eq2_top",
     part_number = "xc7a100tcsg324-1",
     tags = ["manual"],
-    xilinx_env = "//:xilinx_env.sh",
+    xilinx_env = "//3rdparty:xilinx_env.sh",
 )
