@@ -24,10 +24,6 @@ set_property -dict { PACKAGE_PIN T14   IOSTANDARD LVCMOS33 } [get_ports { anodes
 set_property -dict { PACKAGE_PIN K2    IOSTANDARD LVCMOS33 } [get_ports { anodes_7seg[6] }]; #IO_L23P_T3_35 Sch=an[6]
 set_property -dict { PACKAGE_PIN U13   IOSTANDARD LVCMOS33 } [get_ports { anodes_7seg[7] }]; #IO_L23N_T3_A02_D18_14 Sch=an[7]
 
-# # LEDs
-# set_property -dict { PACKAGE_PIN H17   IOSTANDARD LVCMOS33 } [get_ports { done }]; #IO_L18P_T2_A24_15 Sch=led[0]
-# set_property -dict { PACKAGE_PIN K15   IOSTANDARD LVCMOS33 } [get_ports { dealer_win }]; #IO_L24P_T3_RS1_15 Sch=led[1]
-
 # Switches
 set_property -dict { PACKAGE_PIN J15   IOSTANDARD LVCMOS33 } [get_ports { debug_addr[0] }]; #IO_L24N_T3_RS0_15 Sch=sw[0]
 set_property -dict { PACKAGE_PIN L16   IOSTANDARD LVCMOS33 } [get_ports { debug_addr[1] }]; #IO_L3N_T0_DQS_EMCCLK_14 Sch=sw[1]

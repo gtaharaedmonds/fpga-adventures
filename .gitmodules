@@ -1,0 +1,3 @@
+[submodule "external/FPGA-RMII-SMII"]
+	path = external/FPGA-RMII-SMII
+	url = https://github.com/WangXuan95/FPGA-RMII-SMII.git
