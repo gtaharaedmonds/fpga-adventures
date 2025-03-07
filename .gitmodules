@@ -1,3 +1,6 @@
 [submodule "3rdparty/FPGA-RMII-SMII"]
 	path = 3rdparty/FPGA-RMII-SMII
 	url = https://github.com/WangXuan95/FPGA-RMII-SMII.git
+[submodule "3rdparty/neorv32"]
+	path = 3rdparty/neorv32
+	url = https://github.com/stnolting/neorv32.git
