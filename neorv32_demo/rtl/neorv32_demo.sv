@@ -2,7 +2,10 @@ module neorv32_demo (
     input logic sys_clk,
     input logic rst_n,
     input logic [7:0] gpio_i,
-    output logic [7:0] gpio_o
+    output logic [7:0] gpio_o,
+    output logic gpio_o_8,
+    input logic uart_tx,
+    output logic uart_rx
 );
 
   neorv32_system neorv32_system_unit (
