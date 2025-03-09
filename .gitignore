@@ -1,6 +1,5 @@
 .vscode
 .zed
-bazel-*
 
 *.cache
 *.gen
