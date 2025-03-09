@@ -3,4 +3,4 @@
 	url = https://github.com/WangXuan95/FPGA-RMII-SMII.git
 [submodule "external/neorv32"]
 	path = external/neorv32
-	url = https://github.com/stnolting/neorv32.git
+	url = https://github.com/gtaharaedmonds/neorv32.git

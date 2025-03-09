@@ -1,3 +1,3 @@
 # Lab 3: Cracking the ARC4 Cipher
 
-WIP
+ARC4 stream cipher decoding (done) and cracking (TODO).

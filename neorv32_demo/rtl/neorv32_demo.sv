@@ -7,15 +7,6 @@ module neorv32_demo (
     input logic uart_rx
 );
 
-  neorv32_system neorv32_system_unit (
-      .*,
-      .time_irq(0),
-      .sw_irq  (0),
-      .ext_irq (0),
-      .jtag_tdi(),
-      .jtag_tdo(),
-      .jtag_tck(),
-      .jtag_tms()
-  );
+  neorv32_system neorv32_system_unit (.*);
 
 endmodule
