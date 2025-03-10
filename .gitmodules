@@ -4,3 +4,6 @@
 [submodule "external/neorv32"]
 	path = external/neorv32
 	url = https://github.com/gtaharaedmonds/neorv32.git
+[submodule "external/digilent-xdc"]
+	path = external/digilent-xdc
+	url = https://github.com/Digilent/digilent-xdc.git
