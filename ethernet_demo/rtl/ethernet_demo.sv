@@ -7,6 +7,6 @@ module ethernet_demo (
     input logic uart_rx
 );
 
-  neorv32_core neorv32_core_unit (.*);
+  neorv32_system neorv32_system_unit (.*);
 
 endmodule

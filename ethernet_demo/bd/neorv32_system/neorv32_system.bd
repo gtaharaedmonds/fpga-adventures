@@ -3,7 +3,7 @@
     "design_info": {
       "boundary_crc": "0x4E9CCF4E38AE671C",
       "device": "xc7a100tcsg324-1",
-      "name": "neorv32_core",
+      "name": "neorv32_system",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
       "tool_version": "2024.1",
@@ -22,7 +22,7 @@
             "value_src": "default"
           },
           "CLK_DOMAIN": {
-            "value": "neorv32_core_sys_clk",
+            "value": "neorv32_system_sys_clk",
             "value_src": "default"
           },
           "FREQ_HZ": {
@@ -77,8 +77,8 @@
       "neorv32_vivado_ip_0": {
         "vlnv": "NEORV32:user:neorv32_vivado_ip:1.0",
         "ip_revision": "1",
-        "xci_name": "neorv32_core_neorv32_vivado_ip_0_0",
-        "xci_path": "ip/neorv32_core_neorv32_vivado_ip_0_0/neorv32_core_neorv32_vivado_ip_0_0.xci",
+        "xci_name": "neorv32_system_neorv32_vivado_ip_0_0",
+        "xci_path": "ip/neorv32_system_neorv32_vivado_ip_0_0/neorv32_system_neorv32_vivado_ip_0_0.xci",
         "inst_hier_path": "neorv32_vivado_ip_0",
         "parameters": {
           "IO_CLINT_EN": {

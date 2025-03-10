@@ -1,6 +1,9 @@
 .vscode
 .zed
 
+target
+Cargo.lock
+
 *.cache
 *.gen
 *.hw
