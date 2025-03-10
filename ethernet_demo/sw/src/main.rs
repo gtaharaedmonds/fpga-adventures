@@ -9,11 +9,15 @@ use neorv32::{
     println,
     uart::{Uart, init_uart_print},
 };
+use volatile_register::RW;
+
+const AXI_REG: *mut RW<u32> = 0xF000_0000 as *mut RW<u32>;
 
 #[entry]
 fn main() -> ! {
     let mut gpio = Gpio::new(neorv32::GPIO_BASE);
     let uart = Uart::new(neorv32::UART0_BASE);
+    let axi_reg: &mut RW<u32> = unsafe { &mut *AXI_REG };
 
     // uart.init(19200); <-- If I re-initialize this UART stops working?
     init_uart_print(uart);
@@ -37,6 +41,9 @@ fn main() -> ! {
 
             enabled = !enabled;
             i = 0;
+
+            unsafe { axi_reg.write(iter * 2) };
+            println!("AXI R/W result: {}", axi_reg.read());
         }
     }
 }
