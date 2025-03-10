@@ -1,7 +1,9 @@
 [target.riscv32imc-unknown-none-elf]
 rustflags = [
-  "-C", "link-arg=-Tshared/sw/neorv32/memory.x", # memory.x must appear BEFORE link.x
-  "-C", "link-arg=-Tlink.x",
+  "-C",
+  "link-arg=-Tshared/sw/memory.x", # memory.x must appear BEFORE link.x
+  "-C",
+  "link-arg=-Tlink.x",
 ]
 
 [build]

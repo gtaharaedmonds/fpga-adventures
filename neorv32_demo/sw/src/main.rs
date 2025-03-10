@@ -4,20 +4,34 @@
 use panic_halt as _;
 use riscv_rt::entry;
 
-use neorv32::gpio::*;
+fn gpio_write(gpio: &mut neorv32::Gpio, pin: usize, value: bool) {
+    gpio.port_out().modify(|r, w| unsafe {
+        if value {
+            w.bits(r.bits() | (1 << pin))
+        } else {
+            w.bits(r.bits() & !(1 << pin))
+        }
+    });
+}
+
+fn gpio_read(gpio: &neorv32::Gpio, pin: usize) -> bool {
+    (gpio.port_in().read().bits() & (1 << pin)) != 0
+}
 
 #[entry]
 fn main() -> ! {
-    let mut gpio = Gpio::new(NEORV32_GPIO_REGS);
+    let peripherals = unsafe { neorv32::Peripherals::steal() };
+    let mut gpio = peripherals.gpio;
 
     let mut i = 0;
     let mut enabled = false;
 
     loop {
-        gpio.write_output(7, enabled);
+        gpio_write(&mut gpio, 7, enabled);
 
         for pin in 0..7 {
-            gpio.write_output(pin, gpio.read_input(pin));
+            let switched = gpio_read(&gpio, pin);
+            gpio_write(&mut gpio, pin, switched);
         }
 
         if i < 100_000 {
