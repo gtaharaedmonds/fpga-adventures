@@ -1,0 +1,165 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x4E9CCF4E38AE671C",
+      "device": "xc7a100tcsg324-1",
+      "name": "neorv32_core",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2024.1",
+      "validated": "true"
+    },
+    "design_tree": {
+      "neorv32_vivado_ip_0": ""
+    },
+    "ports": {
+      "sys_clk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "rst_n",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "neorv32_core_sys_clk",
+            "value_src": "default"
+          },
+          "FREQ_HZ": {
+            "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.0",
+            "value_src": "default"
+          }
+        }
+      },
+      "rst_n": {
+        "type": "rst",
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
+      },
+      "gpio_i": {
+        "direction": "I",
+        "left": "7",
+        "right": "0"
+      },
+      "gpio_o": {
+        "direction": "O",
+        "left": "7",
+        "right": "0"
+      },
+      "uart_rx": {
+        "direction": "I"
+      },
+      "uart_tx": {
+        "direction": "O"
+      }
+    },
+    "components": {
+      "neorv32_vivado_ip_0": {
+        "vlnv": "NEORV32:user:neorv32_vivado_ip:1.0",
+        "ip_revision": "1",
+        "xci_name": "neorv32_core_neorv32_vivado_ip_0_0",
+        "xci_path": "ip/neorv32_core_neorv32_vivado_ip_0_0/neorv32_core_neorv32_vivado_ip_0_0.xci",
+        "inst_hier_path": "neorv32_vivado_ip_0",
+        "parameters": {
+          "IO_CLINT_EN": {
+            "value": "true"
+          },
+          "IO_GPIO_EN": {
+            "value": "true"
+          },
+          "IO_GPIO_IN_NUM": {
+            "value": "8"
+          },
+          "IO_GPIO_OUT_NUM": {
+            "value": "8"
+          },
+          "IO_UART0_EN": {
+            "value": "true"
+          },
+          "MEM_INT_DMEM_EN": {
+            "value": "true"
+          },
+          "MEM_INT_IMEM_EN": {
+            "value": "true"
+          },
+          "OCD_EN": {
+            "value": "false"
+          },
+          "RISCV_ISA_C": {
+            "value": "true"
+          },
+          "RISCV_ISA_E": {
+            "value": "false"
+          },
+          "RISCV_ISA_M": {
+            "value": "true"
+          },
+          "RISCV_ISA_Zicntr": {
+            "value": "true"
+          },
+          "XBUS_EN": {
+            "value": "false"
+          }
+        }
+      }
+    },
+    "nets": {
+      "gpio_i_1": {
+        "ports": [
+          "gpio_i",
+          "neorv32_vivado_ip_0/gpio_i"
+        ]
+      },
+      "neorv32_vivado_ip_0_uart0_txd_o": {
+        "ports": [
+          "neorv32_vivado_ip_0/uart0_txd_o",
+          "uart_tx"
+        ]
+      },
+      "neorv32_vivado_ip_1_gpio_o": {
+        "ports": [
+          "neorv32_vivado_ip_0/gpio_o",
+          "gpio_o"
+        ]
+      },
+      "rst_n_1": {
+        "ports": [
+          "rst_n",
+          "neorv32_vivado_ip_0/resetn"
+        ]
+      },
+      "sys_clk_1": {
+        "ports": [
+          "sys_clk",
+          "neorv32_vivado_ip_0/clk"
+        ]
+      },
+      "uart_rx_1": {
+        "ports": [
+          "uart_rx",
+          "neorv32_vivado_ip_0/uart0_rxd_i"
+        ]
+      }
+    }
+  }
+}
