@@ -13,8 +13,6 @@ pub struct Gpio {
     regs: &'static mut GpioRegs,
 }
 
-pub const NEORV32_GPIO_REGS: *mut GpioRegs = 0xFFFC0000 as *mut GpioRegs;
-
 impl Gpio {
     pub fn new(regs: *mut GpioRegs) -> Self {
         Self {

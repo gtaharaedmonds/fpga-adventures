@@ -99,8 +99,14 @@
           "MEM_INT_DMEM_EN": {
             "value": "true"
           },
+          "MEM_INT_DMEM_SIZE": {
+            "value": "65536"
+          },
           "MEM_INT_IMEM_EN": {
             "value": "true"
+          },
+          "MEM_INT_IMEM_SIZE": {
+            "value": "65536"
           },
           "OCD_EN": {
             "value": "false"

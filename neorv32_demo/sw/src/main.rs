@@ -8,7 +8,7 @@ use neorv32::gpio::*;
 
 #[entry]
 fn main() -> ! {
-    let mut gpio = Gpio::new(NEORV32_GPIO_REGS);
+    let mut gpio = Gpio::new(neorv32::GPIO_BASE);
 
     let mut i = 0;
     let mut enabled = false;

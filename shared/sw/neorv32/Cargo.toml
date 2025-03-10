@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+modular-bitfield = "0.11.2"
+volatile-register = "0.2.2"
