@@ -1,3 +1,8 @@
 [workspace]
-members = ["neorv32_demo/sw", "shared/sw/neorv32", "ethernet_demo/sw"]
+members = [
+    "neorv32_demo/sw",
+    "shared/sw/neorv32",
+    "ethernet_demo/sw",
+    "ethernetlite_demo/sw",
+]
 resolver = "3"
