@@ -38,6 +38,7 @@ pub struct UartDataReg {
     tx_fifo_size: B4,
 }
 
+#[repr(C)]
 pub struct UartRegs {
     pub ctrl: RW<UartCtrlReg>,
     data: RW<UartDataReg>,

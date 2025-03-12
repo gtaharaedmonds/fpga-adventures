@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x176A8D8559C883B2",
+      "boundary_crc": "0x176A8D855555A438",
       "device": "xc7a100tcsg324-1",
       "name": "neorv32_system",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
@@ -159,7 +159,7 @@
             "value_src": "default"
           },
           "PHASE": {
-            "value": "0.0",
+            "value": "45.0",
             "value_src": "ip_prop"
           }
         }
@@ -266,25 +266,31 @@
             "value": "true"
           },
           "CLKOUT3_JITTER": {
-            "value": "125.247"
+            "value": "151.636"
           },
           "CLKOUT3_PHASE_ERROR": {
             "value": "98.575"
           },
           "CLKOUT3_REQUESTED_OUT_FREQ": {
-            "value": "125.000"
+            "value": "50"
+          },
+          "CLKOUT3_REQUESTED_PHASE": {
+            "value": "45"
           },
           "CLKOUT3_USED": {
-            "value": "false"
+            "value": "true"
           },
           "MMCM_CLKOUT1_DIVIDE": {
             "value": "20"
           },
           "MMCM_CLKOUT2_DIVIDE": {
-            "value": "1"
+            "value": "20"
+          },
+          "MMCM_CLKOUT2_PHASE": {
+            "value": "45.000"
           },
           "NUM_OUT_CLKS": {
-            "value": "2"
+            "value": "3"
           },
           "RESET_PORT": {
             "value": "resetn"
@@ -302,7 +308,24 @@
         "ip_revision": "30",
         "xci_name": "neorv32_system_axi_ethernetlite_0_0",
         "xci_path": "ip/neorv32_system_axi_ethernetlite_0_0/neorv32_system_axi_ethernetlite_0_0.xci",
-        "inst_hier_path": "axi_ethernetlite_0"
+        "inst_hier_path": "axi_ethernetlite_0",
+        "parameters": {
+          "C_INCLUDE_GLOBAL_BUFFERS": {
+            "value": "1"
+          },
+          "C_INCLUDE_INTERNAL_LOOPBACK": {
+            "value": "0"
+          },
+          "C_INCLUDE_MDIO": {
+            "value": "1"
+          },
+          "C_RX_PING_PONG": {
+            "value": "0"
+          },
+          "C_TX_PING_PONG": {
+            "value": "0"
+          }
+        }
       },
       "util_mii_to_rmii_0": {
         "vlnv": "analog.com:user:util_mii_to_rmii:1.0",
@@ -355,7 +378,12 @@
       "clk_wiz_0_clk_out2": {
         "ports": [
           "clk_wiz_0/clk_out2",
-          "util_mii_to_rmii_0/ref_clk",
+          "util_mii_to_rmii_0/ref_clk"
+        ]
+      },
+      "clk_wiz_0_clk_out3": {
+        "ports": [
+          "clk_wiz_0/clk_out3",
           "eth_refclk"
         ]
       },

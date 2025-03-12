@@ -4,5 +4,6 @@ members = [
     "shared/sw/neorv32",
     "ethernet_demo/sw",
     "ethernetlite_demo/sw",
+    "shared/sw/xilinx",
 ]
 resolver = "3"
