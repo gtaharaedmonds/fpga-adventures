@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-# TODO: Use bilge instead...
-modular-bitfield = "0.11.2"
+bilge = "0.2.0"
+critical-section = "1.2.0"
+riscv = { version = "0.13.0", features = ["critical-section-single-hart"] }
+riscv-rt = "0.14.0"
 volatile-register = "0.2.2"

@@ -1,0 +1,16 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2024 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2024.1 (lin64) Build 5076996 Wed May 22 18:36:09 MDT 2024
+| Date         : Fri Mar 14 03:54:36 2025
+| Host         : ip-172-31-46-14 running 64-bit Ubuntu 24.04.1 LTS
+| Command      : upgrade_ip
+| Device       : xc7a100tcsg324-1
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+Upgrade Log for IP 'neorv32_system_neorv32_vivado_ip_0_0'
+
+1. Summary
+----------
+
+SUCCESS in the update of neorv32_system_neorv32_vivado_ip_0_0 (NEORV32:user:neorv32_vivado_ip:1.0 (Rev. 1)) to current project options.
+

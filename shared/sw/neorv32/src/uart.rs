@@ -1,17 +1,15 @@
-#![allow(static_mut_refs)]
-
+use bilge::prelude::*;
 use core::fmt::{self, Write};
-use modular_bitfield::{bitfield, prelude::*};
 use volatile_register::RW;
 
-#[bitfield]
-#[derive(Clone, Copy, Debug)]
+#[bitsize(32)]
+#[derive(Clone, Copy, DebugBits, FromBits)]
 pub struct UartCtrlReg {
     en: bool,
     sim_mode: bool,
     hw_fc_en: bool,
-    prsc: B3,
-    baud: B10,
+    prsc: u3,
+    baud: u10,
     rx_nempty: bool,
     rx_half: bool,
     rx_full: bool,
@@ -23,19 +21,20 @@ pub struct UartCtrlReg {
     irq_rx_full: bool,
     irq_tx_empty: bool,
     irq_tx_nhalf: bool,
-    unused: B1,
+    reserved: u1,
     rx_clr: bool,
     tx_clr: bool,
     rx_over: bool,
     tx_busy: bool,
 }
 
-#[bitfield]
-#[derive(Clone, Copy, Debug)]
+#[bitsize(32)]
+#[derive(Clone, Copy, DebugBits)]
 pub struct UartDataReg {
-    rtx_word: u16,
-    rx_fifo_size: B4,
-    tx_fifo_size: B4,
+    rtx_byte: u8,
+    rx_fifo_size: u4,
+    tx_fifo_size: u4,
+    reserved: u16,
 }
 
 #[repr(C)]
@@ -57,7 +56,7 @@ impl Uart {
 
     pub fn init(&mut self, baudrate: usize) {
         // Reset CTRL word.
-        unsafe { self.regs.ctrl.write(UartCtrlReg::new().with_en(false)) };
+        unsafe { self.regs.ctrl.write(UartCtrlReg::from(0)) };
 
         let mut baud_div = crate::CLK_HZ / (2 * baudrate);
         let mut prsc_sel = 0;
@@ -75,12 +74,12 @@ impl Uart {
 
         // Write new CTRL word.
         unsafe {
-            self.regs.ctrl.write(
-                UartCtrlReg::new()
-                    .with_en(true)
-                    .with_prsc(prsc_sel as u8)
-                    .with_baud((baud_div - 1) as u16),
-            );
+            self.regs.ctrl.modify(|mut ctrl| {
+                ctrl.set_en(true);
+                ctrl.set_prsc(u3::new(prsc_sel));
+                ctrl.set_baud(u10::new(baud_div as u16 - 1));
+                ctrl
+            })
         }
     }
 
@@ -88,9 +87,10 @@ impl Uart {
         while self.regs.ctrl.read().tx_full() {}
 
         unsafe {
-            self.regs
-                .data
-                .write(UartDataReg::new().with_rtx_word(chr as u16))
+            self.regs.data.modify(|mut data| {
+                data.set_rtx_byte(chr);
+                data
+            })
         };
     }
 
