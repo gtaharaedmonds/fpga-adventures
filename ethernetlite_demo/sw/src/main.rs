@@ -11,7 +11,9 @@ use neorv32::{
     println,
     uart::{Uart, init_uart_print},
 };
-use xilinx::ethernetlite::{EthernetLite, MacAddress, PhySpeed, packet_buffer::MAX_DATA_SIZE};
+use xilinx::ethernetlite::{EthernetLite, MacAddress, packet_buffer::MAX_DATA_SIZE, phy::PhySpeed};
+
+const PHY_ADDR: u8 = 1;
 
 #[entry]
 fn main() -> ! {
@@ -29,15 +31,12 @@ fn main() -> ! {
     let mac = MacAddress::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
     let mut ethernet = EthernetLite::new(0xF000_0000, mac);
 
-    println!("Initializing ethernet!");
     ethernet.init();
     println!("Done initializing ethernet");
 
-    let phy_addr = ethernet.phy_detect().unwrap();
-    println!("PHY address: {:?}", phy_addr);
-
-    ethernet.phy_configure_loopback(phy_addr, PhySpeed::Speed100M);
-    println!("Done initializing ethernet!");
+    let mut phy = ethernet.phy(PHY_ADDR);
+    phy.configure_loopback(PhySpeed::Speed100M);
+    println!("Done configuring PHY");
 
     ethernet.flush_receive();
     println!("Flushed RX buffer");

@@ -1,46 +1,13 @@
 pub mod packet_buffer;
+pub mod phy;
 pub mod regs;
 
 use bilge::prelude::*;
 use heapless::Vec;
 use neorv32::clint::delay_ms;
 use packet_buffer::{MAX_DATA_SIZE, PacketBuffer};
+use phy::Phy;
 use regs::*;
-
-#[bitsize(1)]
-#[derive(FromBits, Debug, Clone, Copy)]
-pub enum PhySpeed {
-    Speed10M = 0,
-    Speed100M = 1,
-}
-
-#[bitsize(16)]
-#[derive(DebugBits, Clone, Copy, FromBits)]
-struct PhyControlReg {
-    reserved: u13,
-    speed: PhySpeed,
-    loopback: bool,
-    reset: bool,
-}
-
-impl PhyControlReg {
-    const ADDR: u8 = 0;
-}
-
-#[bitsize(16)]
-#[derive(DebugBits, Clone, Copy, FromBits)]
-struct PhyStatusReg {
-    reserved: u3,
-    auto_negotation: bool,
-    reserved: u7,
-    half_duplex_10M: bool,
-    full_duplex_10M: bool,
-    reserved: u3,
-}
-
-impl PhyStatusReg {
-    const ADDR: u8 = 1;
-}
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
@@ -134,119 +101,8 @@ impl EthernetLite {
         &self.mac
     }
 
-    fn phy_busy(&self) -> bool {
-        self.regs.mdio.control.read().busy()
-    }
-
-    fn phy_write(&mut self, phy_addr: u8, reg_addr: u8, data: u16) {
-        while self.phy_busy() {}
-
-        // Write MDIO address register.
-        unsafe {
-            self.regs.mdio.addr.write(MdioAddrReg::new(
-                u5::new(reg_addr),
-                u5::new(phy_addr),
-                false,
-            ))
-        }
-
-        // Write to data register.
-        unsafe { self.regs.mdio.write_data.write(MdioDataReg::new(data)) }
-
-        // Set MDIO enable and status bits.
-        unsafe {
-            self.regs.mdio.control.modify(|mut control| {
-                control.set_busy(true);
-                control.set_enable(true);
-                control
-            })
-        };
-
-        // Block until transaction complete.
-        while self.phy_busy() {}
-
-        // Disable MDIO.
-        unsafe {
-            self.regs.mdio.control.modify(|mut control| {
-                control.set_enable(false);
-                control
-            })
-        }
-    }
-
-    fn phy_read(&mut self, phy_addr: u8, reg_addr: u8) -> u16 {
-        while self.phy_busy() {}
-
-        // Write MDIO address register.
-        unsafe {
-            self.regs
-                .mdio
-                .addr
-                .write(MdioAddrReg::new(u5::new(reg_addr), u5::new(phy_addr), true))
-        }
-
-        // Set MDIO enable and status bits.
-        unsafe {
-            self.regs.mdio.control.modify(|mut control| {
-                control.set_busy(true);
-                control.set_enable(true);
-                control
-            })
-        };
-
-        // Block until transaction complete.
-        while self.phy_busy() {}
-
-        // Data is now available on the read register.
-        let data = self.regs.mdio.read_data.read().data();
-
-        // Disable MDIO.
-        unsafe {
-            self.regs.mdio.control.modify(|mut control| {
-                control.set_enable(false);
-                control
-            })
-        }
-
-        data
-    }
-
-    pub fn phy_detect(&mut self) -> Result<u8, ()> {
-        for addr in 0..32 {
-            let reg = self.phy_read(addr, PhyStatusReg::ADDR);
-            if reg == 0xFFFF {
-                continue;
-            }
-
-            let status = PhyStatusReg::from(reg);
-            if status.auto_negotation() && status.half_duplex_10M() && status.full_duplex_10M() {
-                return Ok(addr);
-            }
-        }
-
-        Err(())
-    }
-
-    pub fn phy_configure_loopback(&mut self, phy_addr: u8, speed: PhySpeed) {
-        // Set speed and put phy in reset.
-        self.phy_write(
-            phy_addr,
-            PhyControlReg::ADDR,
-            PhyControlReg::new(speed, false, true).value,
-        );
-
-        // Delay for phy to reset.
-        delay_ms(4000);
-
-        // Enable loopback.
-        self.phy_write(
-            phy_addr,
-            PhyControlReg::ADDR,
-            PhyControlReg::new(speed, true, false).value,
-        );
-
-        // Delay for loopback to enable.
-        delay_ms(1000);
+    pub fn phy(&mut self, addr: u8) -> Phy {
+        Phy::new(self, addr)
     }
 
     fn tx_busy(&mut self) -> bool {
