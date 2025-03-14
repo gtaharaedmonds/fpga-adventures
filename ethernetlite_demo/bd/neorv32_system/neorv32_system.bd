@@ -13,7 +13,7 @@
       "neorv32_vivado_ip_0": "",
       "clk_wiz_0": "",
       "axi_ethernetlite_0": "",
-      "util_mii_to_rmii_0": ""
+      "mii_to_rmii_0": ""
     },
     "interface_ports": {
       "eth_mdio": {
@@ -339,12 +339,12 @@
           }
         }
       },
-      "util_mii_to_rmii_0": {
-        "vlnv": "analog.com:user:util_mii_to_rmii:1.0",
-        "ip_revision": "1",
-        "xci_name": "neorv32_system_util_mii_to_rmii_0_0",
-        "xci_path": "ip/neorv32_system_util_mii_to_rmii_0_0/neorv32_system_util_mii_to_rmii_0_0.xci",
-        "inst_hier_path": "util_mii_to_rmii_0"
+      "mii_to_rmii_0": {
+        "vlnv": "xilinx.com:ip:mii_to_rmii:2.0",
+        "ip_revision": "21",
+        "xci_name": "neorv32_system_mii_to_rmii_0_0",
+        "xci_path": "ip/neorv32_system_mii_to_rmii_0_0/neorv32_system_mii_to_rmii_0_0.xci",
+        "inst_hier_path": "mii_to_rmii_0"
       }
     },
     "interface_nets": {
@@ -357,19 +357,19 @@
       "axi_ethernetlite_0_MII": {
         "interface_ports": [
           "axi_ethernetlite_0/MII",
-          "util_mii_to_rmii_0/MII"
+          "mii_to_rmii_0/MII"
+        ]
+      },
+      "mii_to_rmii_0_RMII_PHY_M": {
+        "interface_ports": [
+          "eth_rmii",
+          "mii_to_rmii_0/RMII_PHY_M"
         ]
       },
       "neorv32_vivado_ip_0_m_axi": {
         "interface_ports": [
           "neorv32_vivado_ip_0/m_axi",
           "axi_ethernetlite_0/S_AXI"
-        ]
-      },
-      "util_mii_to_rmii_0_RMII": {
-        "interface_ports": [
-          "eth_rmii",
-          "util_mii_to_rmii_0/RMII"
         ]
       }
     },
@@ -396,7 +396,7 @@
       "clk_wiz_0_clk_out2": {
         "ports": [
           "clk_wiz_0/clk_out2",
-          "util_mii_to_rmii_0/ref_clk"
+          "mii_to_rmii_0/ref_clk"
         ]
       },
       "clk_wiz_0_clk_out3": {
@@ -409,7 +409,6 @@
         "ports": [
           "clk_wiz_0/locked",
           "axi_ethernetlite_0/s_axi_aresetn",
-          "util_mii_to_rmii_0/reset_n",
           "neorv32_vivado_ip_0/resetn"
         ]
       },
@@ -434,7 +433,8 @@
       "rst_n_1": {
         "ports": [
           "rst_n",
-          "clk_wiz_0/resetn"
+          "clk_wiz_0/resetn",
+          "mii_to_rmii_0/rst_n"
         ]
       },
       "sys_clk_1": {

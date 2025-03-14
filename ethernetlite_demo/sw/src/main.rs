@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-// use heapless::Vec;
+use heapless::Vec;
 use panic_halt as _;
 use riscv_rt::entry;
 
@@ -21,43 +21,26 @@ fn main() -> ! {
 
     uart.init(19200);
     init_uart_print(uart);
-    println!("Setup printing!");
+    println!("Initialized UART printing");
 
     clint.init();
-    println!("Initialized!");
+    println!("Initialized CLINT timer");
 
-    // clint.set_timer_freq(1);
-    // println!("Set frequency!");
+    let mac = MacAddress::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
+    let mut ethernet = EthernetLite::new(0xF000_0000, mac);
 
-    // // let mac = MacAddress::new([0x00, 0x00, 0x5E, 0x00, 0xFA, 0xCE]);
-    // let mac = MacAddress::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
-    // let broadcast = MacAddress::new([0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]);
-    // let mut ethernet = EthernetLite::new(0xF000_0000, mac);
+    println!("Initializing ethernet!");
+    ethernet.init();
+    println!("Done initializing ethernet");
 
-    // println!("Initializing ethernet!");
-    // ethernet.init();
-    // println!("Done initializing ethernet");
+    let phy_addr = ethernet.phy_detect().unwrap();
+    println!("PHY address: {:?}", phy_addr);
 
-    // let phy_addr = ethernet.phy_detect().unwrap();
-    // println!("PHY address: {:?}", phy_addr);
+    ethernet.phy_configure_loopback(phy_addr, PhySpeed::Speed100M);
+    println!("Done initializing ethernet!");
 
-    // ethernet.phy_configure_loopback(phy_addr, PhySpeed::Speed100M);
-    // println!("Done initializing ethernet!");
-
-    // ethernet.flush_receive();
-    // println!("Flushed RX buffer");
-
-    // // let mut iter = 0;
-    // //
-
-    // // loop {
-    // let data: Vec<u8, MAX_DATA_SIZE> = (0..100).collect();
-    // ethernet.transmit_frame(broadcast, data);
-    // println!("Sent frame!");
-    // delay_ms(1000);
-    // ethernet.receive_frame();
-    // // println!("Result: {:?}",);
-    // // }
+    ethernet.flush_receive();
+    println!("Flushed RX buffer");
 
     loop {
         gpio.write_output(7, true);
@@ -72,6 +55,10 @@ fn main() -> ! {
 
         println!("Hello, world (at 1Hz)");
 
-        // delay_ms(1000);
+        let data: Vec<u8, MAX_DATA_SIZE> = (0..100).collect();
+        ethernet.transmit_frame(mac, data);
+        println!("Sent frame!");
+
+        println!("Received frame: {:?}", ethernet.receive_frame());
     }
 }

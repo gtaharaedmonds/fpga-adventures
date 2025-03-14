@@ -1,6 +1,7 @@
-use core::{cell::RefCell, task::Context};
+use core::cell::RefCell;
 
 use critical_section::Mutex;
+use heapless::Vec;
 use riscv::interrupt::Interrupt;
 use volatile_register::{RO, RW};
 
@@ -90,24 +91,34 @@ pub trait InterruptCtx: Sync {
     fn handle(&self);
 }
 
-struct ExternalInterruptCtx<'a> {
-    ctx: &'a dyn InterruptCtx,
+struct ExternalInterruptCtx {
+    handlers: Vec<&'static dyn InterruptCtx, 32>,
 }
 
-static EXTERNAL_CTX: Mutex<RefCell<Option<ExternalInterruptCtx>>> = Mutex::new(RefCell::new(None));
+static EXTERNAL_CTX: Mutex<RefCell<ExternalInterruptCtx>> =
+    Mutex::new(RefCell::new(ExternalInterruptCtx {
+        handlers: Vec::new(),
+    }));
 
 #[riscv_rt::core_interrupt(Interrupt::MachineExternal)]
 fn external_handler() {
     critical_section::with(|cs| {
-        let mut ctx_maybe = EXTERNAL_CTX.borrow_ref_mut(cs);
-        let ctx = ctx_maybe.as_mut().unwrap();
-        ctx.ctx.handle();
+        let ctx = EXTERNAL_CTX.borrow_ref_mut(cs);
+
+        ctx.handlers.iter().for_each(|handler| {
+            handler.handle();
+        });
     })
 }
 
-pub fn install_external_handler(external_ctx: &'static dyn InterruptCtx) {
+pub fn register_external_handler(external_ctx: &'static dyn InterruptCtx) {
     critical_section::with(|cs| {
-        let mut ctx_maybe = EXTERNAL_CTX.borrow_ref_mut(cs);
-        ctx_maybe.replace(ExternalInterruptCtx { ctx: external_ctx });
+        let mut ctx = EXTERNAL_CTX.borrow_ref_mut(cs);
+        ctx.handlers
+            .push(external_ctx)
+            .map_err(
+                |_| "Failed to register external interrupt handler, ran out of space in the Vec!",
+            )
+            .unwrap();
     })
 }

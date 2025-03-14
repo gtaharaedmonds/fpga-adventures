@@ -3,7 +3,7 @@ pub mod regs;
 
 use bilge::prelude::*;
 use heapless::Vec;
-use neorv32::{clint::delay_ms, print, println};
+use neorv32::clint::delay_ms;
 use packet_buffer::{MAX_DATA_SIZE, PacketBuffer};
 use regs::*;
 
@@ -88,19 +88,14 @@ impl EthernetLite {
             self.regs
                 .tx_control
                 .control
-                .write(TxControlReg::new(false, false, true, false));
-            self.regs
-                .tx_control
-                .global_interrupt_enable
-                .write(TxGlobalInterruptEnableReg::new(true));
-            self.regs
-                .rx_control
-                .control
-                .write(RxControlReg::new(false, true));
+                .write(TxControlReg::new(false, false, false, false));
         };
 
         // Set MAC address.
         self.set_mac_address();
+
+        // Flush RX to start receiving packets.
+        self.flush_receive();
     }
 
     fn set_mac_address(&mut self) {
@@ -217,7 +212,7 @@ impl EthernetLite {
     }
 
     pub fn phy_detect(&mut self) -> Result<u8, ()> {
-        for addr in (0..32).rev() {
+        for addr in 0..32 {
             let reg = self.phy_read(addr, PhyStatusReg::ADDR);
             if reg == 0xFFFF {
                 continue;
@@ -252,11 +247,6 @@ impl EthernetLite {
 
         // Delay for loopback to enable.
         delay_ms(1000);
-
-        println!(
-            "Register value after write: {:?}",
-            PhyControlReg::from(self.phy_read(phy_addr, PhyControlReg::ADDR))
-        );
     }
 
     fn tx_busy(&mut self) -> bool {
@@ -271,10 +261,6 @@ impl EthernetLite {
         self.regs.tx_buffer.write_aligned(&packet_buffer);
 
         // Write length of payload and header to TX control register bank.
-        println!(
-            "Writing length: {:?}",
-            TxPacketLengthReg::new(packet_buffer.packet_len() as u16)
-        );
         unsafe {
             self.regs
                 .tx_control
@@ -282,69 +268,33 @@ impl EthernetLite {
                 .write(TxPacketLengthReg::new(packet_buffer.packet_len() as u16));
         }
 
-        println!(
-            "Starting to send frame: {:?} -> {:?}",
-            self.regs.rx_control.control.read(),
-            self.regs.rx_buffer.read_aligned()
-        );
-        print_bytes(self.regs.rx_buffer.read_aligned().bytes());
-
         // Dispatch the transaction.
         unsafe {
             self.regs.tx_control.control.modify(|mut control| {
-                // control.set_loopback(true);
                 control.set_busy(true);
                 control
             });
         }
 
-        // // Spin until complete.
-        // while self.tx_busy() {}
+        // Spin until complete.
+        while self.tx_busy() {}
     }
 
     fn rx_done(&mut self) -> bool {
         self.regs.rx_control.control.read().done()
     }
 
-    // pub fn receive_frame(&mut self) -> Result<PacketBuffer, ()> {
-    //     println!(
-    //         "Waiting for frame: {:?} -> {:?}",
-    //         self.regs.rx_control.control.read(),
-    //         self.regs.rx_buffer.read_aligned()
-    //     );
-
-    //     if self.rx_done() {
-    //         Ok(self.regs.rx_buffer.read_aligned())
-    //     } else {
-    //         Err(())
-    //     }
-    // }
-
-    pub fn receive_frame(&mut self) {
-        println!("Waiting for frame...");
-
-        println!(
-            "Waiting for frame: {:?} -> {:?}",
-            self.regs.rx_control.control.read(),
-            self.regs.rx_buffer.read_aligned()
-        );
-
-        while !self.rx_done() {
-            println!(
-                "Spinning: {:?} -> {:?}",
-                self.regs.rx_control.control.read(),
-                self.regs.rx_buffer.read_aligned(),
-            );
-            print_bytes(self.regs.rx_buffer.read_aligned().bytes());
-            delay_ms(1000);
+    pub fn try_receive_frame(&mut self) -> Result<PacketBuffer, ()> {
+        if self.rx_done() {
+            Ok(self.regs.rx_buffer.read_aligned())
+        } else {
+            Err(())
         }
+    }
 
-        println!(
-            "Packet received: {:?} -> {:?}",
-            self.regs.rx_control.control.read(),
-            self.regs.rx_buffer.read_aligned()
-        );
-        print_bytes(self.regs.rx_buffer.read_aligned().bytes());
+    pub fn receive_frame(&mut self) -> PacketBuffer {
+        while !self.rx_done() {}
+        self.regs.rx_buffer.read_aligned()
     }
 
     pub fn flush_receive(&mut self) {
@@ -355,11 +305,4 @@ impl EthernetLite {
             });
         }
     }
-}
-
-fn print_bytes(bytes: &[u8]) {
-    for byte in bytes {
-        print!("{:02X} ", byte);
-    }
-    println!("");
 }

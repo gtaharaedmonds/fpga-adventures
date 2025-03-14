@@ -101,16 +101,10 @@ impl PacketBuffer {
 
 impl fmt::Debug for PacketBuffer {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let fcs_bytes: [u8; 4] = (&self.data[self.data_len()..self.data_len() + 4])
-            .try_into()
-            .unwrap();
-        let fcs = u32::from_be_bytes(fcs_bytes);
-
         f.debug_struct("PacketBuffer")
             .field("dest_addr", &self.dest_addr)
             .field("src_addr", &self.src_addr)
             .field("data", &self.data())
-            .field("fcs", &fcs)
             .finish()
     }
 }
