@@ -1,9 +1,0 @@
-[package]
-name = "ethernet_demo"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-riscv-rt = "0.14.0"
-neorv32 = { path = "../../shared/sw/neorv32" }
-volatile-register = "0.2.2"
