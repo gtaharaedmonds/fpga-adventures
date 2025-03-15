@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 
-use panic_halt as _;
+use neorv32 as _;
 use riscv_rt::entry;
 
 use neorv32::gpio::*;

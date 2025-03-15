@@ -2,9 +2,9 @@
 #![no_main]
 
 use heapless::Vec;
-use panic_halt as _;
 use riscv_rt::entry;
 
+use neorv32 as _;
 use neorv32::{
     clint::{Clint, delay_ms},
     gpio::*,
