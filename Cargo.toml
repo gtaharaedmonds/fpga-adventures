@@ -2,7 +2,6 @@
 members = [
     "neorv32_demo/sw",
     "shared/sw/neorv32",
-    "ethernet_demo/sw",
     "ethernetlite_demo/sw",
     "shared/sw/xilinx",
 ]

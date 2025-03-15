@@ -2,9 +2,7 @@ pub mod packet_buffer;
 pub mod phy;
 pub mod regs;
 
-use bilge::prelude::*;
 use heapless::Vec;
-use neorv32::clint::delay_ms;
 use packet_buffer::{MAX_DATA_SIZE, PacketBuffer};
 use phy::Phy;
 use regs::*;

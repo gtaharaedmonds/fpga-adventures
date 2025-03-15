@@ -30,8 +30,8 @@ pub struct PhyStatusReg {
     reserved: u3,
     auto_negotation: bool,
     reserved: u7,
-    half_duplex_10M: bool,
-    full_duplex_10M: bool,
+    half_duplex_10m: bool,
+    full_duplex_10m: bool,
     reserved: u3,
 }
 
