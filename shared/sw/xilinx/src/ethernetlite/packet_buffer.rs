@@ -2,7 +2,7 @@ use core::fmt;
 
 use heapless::Vec;
 
-use super::MacAddress;
+use super::MacAddr;
 
 unsafe fn aligned_volatile_copy<T>(src: &T, dest: &mut T) {
     unsafe {
@@ -37,8 +37,8 @@ pub const MAX_DATA_SIZE: usize = 200;
 
 #[repr(C, align(4))]
 pub struct PacketBuffer {
-    dest_addr: MacAddress,
-    src_addr: MacAddress,
+    dest_addr: MacAddr,
+    src_addr: MacAddr,
     len: u16,
     data: [u8; MAX_DATA_SIZE],
 }
@@ -48,13 +48,13 @@ static_assertions::assert_eq_align!(PacketBuffer, u32);
 
 impl PacketBuffer {
     pub const UNINIT: Self = Self {
-        dest_addr: MacAddress([0; 6]),
-        src_addr: MacAddress([0; 6]),
+        dest_addr: MacAddr([0; 6]),
+        src_addr: MacAddr([0; 6]),
         len: 0,
         data: [0; MAX_DATA_SIZE],
     };
 
-    pub fn new(dest_addr: MacAddress, src_addr: MacAddress, data: Vec<u8, MAX_DATA_SIZE>) -> Self {
+    pub fn new(dest_addr: MacAddr, src_addr: MacAddr, data: Vec<u8, MAX_DATA_SIZE>) -> Self {
         let mut buffer = Self {
             dest_addr,
             src_addr,

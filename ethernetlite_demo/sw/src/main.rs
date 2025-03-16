@@ -11,7 +11,7 @@ use neorv32::{
     println,
     uart::{Uart, init_uart_print},
 };
-use xilinx::ethernetlite::{EthernetLite, MacAddress, packet_buffer::MAX_DATA_SIZE, phy::PhySpeed};
+use xilinx::ethernetlite::{EthernetLite, MacAddr, packet_buffer::MAX_DATA_SIZE, phy::PhySpeed};
 
 const PHY_ADDR: u8 = 1;
 
@@ -28,7 +28,7 @@ fn main() -> ! {
     clint.init();
     println!("Initialized CLINT timer");
 
-    let mac = MacAddress::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
+    let mac = MacAddr::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
     let mut ethernet = EthernetLite::new(0xF000_0000, mac);
 
     ethernet.init();

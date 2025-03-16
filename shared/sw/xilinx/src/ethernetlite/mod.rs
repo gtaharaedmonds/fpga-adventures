@@ -9,15 +9,15 @@ use regs::*;
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
-pub struct MacAddress([u8; 6]);
+pub struct MacAddr([u8; 6]);
 
-impl MacAddress {
+impl MacAddr {
     pub fn new(address_raw: [u8; 6]) -> Self {
         Self(address_raw)
     }
 }
 
-impl core::fmt::Debug for MacAddress {
+impl core::fmt::Debug for MacAddr {
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
@@ -27,8 +27,8 @@ impl core::fmt::Debug for MacAddress {
     }
 }
 
-impl From<MacAddress> for u64 {
-    fn from(mac: MacAddress) -> Self {
+impl From<MacAddr> for u64 {
+    fn from(mac: MacAddr) -> Self {
         let mut bytes = [0; 8];
         bytes[..6].copy_from_slice(&mac.0);
         u64::from_le_bytes(bytes)
@@ -37,11 +37,11 @@ impl From<MacAddress> for u64 {
 
 pub struct EthernetLite {
     regs: EthernetLiteRegs,
-    mac: MacAddress,
+    mac: MacAddr,
 }
 
 impl EthernetLite {
-    pub fn new(base: usize, mac: MacAddress) -> Self {
+    pub fn new(base: usize, mac: MacAddr) -> Self {
         Self {
             regs: EthernetLiteRegs::new(base),
             mac,
@@ -67,7 +67,7 @@ impl EthernetLite {
         // Write MAC address to TX ping buffer.
         self.regs.tx_buffer.write_aligned(&PacketBuffer::new(
             self.mac,
-            MacAddress::new([0; 6]),
+            MacAddr::new([0; 6]),
             Vec::new(),
         ));
 
@@ -95,7 +95,7 @@ impl EthernetLite {
         } {}
     }
 
-    pub fn mac_address(&self) -> &MacAddress {
+    pub fn mac_address(&self) -> &MacAddr {
         &self.mac
     }
 
@@ -107,7 +107,7 @@ impl EthernetLite {
         self.regs.tx_control.control.read().busy()
     }
 
-    pub fn transmit_frame(&mut self, dest: MacAddress, data: Vec<u8, MAX_DATA_SIZE>) {
+    pub fn transmit_frame(&mut self, dest: MacAddr, data: Vec<u8, MAX_DATA_SIZE>) {
         while self.tx_busy() {}
 
         // Write TX buffer.
