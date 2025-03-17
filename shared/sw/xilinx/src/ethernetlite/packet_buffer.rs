@@ -37,8 +37,8 @@ pub const MAX_DATA_SIZE: usize = 200;
 
 #[repr(C, align(4))]
 pub struct PacketBuffer {
-    dest_addr: MacAddr,
-    src_addr: MacAddr,
+    pub dest_addr: MacAddr,
+    pub src_addr: MacAddr,
     len: u16,
     data: [u8; MAX_DATA_SIZE],
 }

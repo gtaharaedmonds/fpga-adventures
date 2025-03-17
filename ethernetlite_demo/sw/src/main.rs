@@ -1,7 +1,6 @@
 #![no_std]
 #![no_main]
 
-use heapless::Vec;
 use riscv_rt::entry;
 
 use neorv32 as _;
@@ -11,7 +10,8 @@ use neorv32::{
     println,
     uart::{Uart, init_uart_print},
 };
-use xilinx::ethernetlite::{EthernetLite, MacAddr, packet_buffer::MAX_DATA_SIZE, phy::PhySpeed};
+use xilinx::ethernetlite::phy::PhyDuplex;
+use xilinx::ethernetlite::{EthernetLite, MacAddr, phy::PhySpeed};
 
 const PHY_ADDR: u8 = 1;
 
@@ -28,36 +28,27 @@ fn main() -> ! {
     clint.init();
     println!("Initialized CLINT timer");
 
-    let mac = MacAddr::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
-    let mut ethernet = EthernetLite::new(0xF000_0000, mac);
+    let server_addr = MacAddr::new([0x00, 0x0A, 0x35, 0x01, 0x02, 0x03]);
+    let mut ethernet = EthernetLite::new(0xF000_0000, server_addr);
 
     ethernet.init();
     println!("Done initializing ethernet");
 
     let mut phy = ethernet.phy(PHY_ADDR);
-    phy.configure_loopback(PhySpeed::Speed100M);
+    phy.configure(PhySpeed::Speed100M, PhyDuplex::Full);
     println!("Done configuring PHY");
-
-    ethernet.flush_receive();
-    println!("Flushed RX buffer");
 
     loop {
         gpio.write_output(7, true);
         delay_ms(500);
-
         gpio.write_output(7, false);
         delay_ms(500);
 
-        for pin in 0..7 {
-            gpio.write_output(pin, gpio.read_input(pin));
-        }
-
-        println!("Hello, world (at 1Hz)");
-
-        let data: Vec<u8, MAX_DATA_SIZE> = (0..100).collect();
-        ethernet.transmit_frame(mac, data);
-        println!("Sent frame!");
-
-        println!("Received frame: {:?}", ethernet.receive_frame());
+        let frame = ethernet.receive_frame();
+        let mut data = frame.data();
+        data.extend_from_slice(" (echo echo echo)".as_bytes())
+            .unwrap();
+        ethernet.transmit_frame(frame.src_addr, data);
+        println!("Echoed frame: {:?}", frame);
     }
 }

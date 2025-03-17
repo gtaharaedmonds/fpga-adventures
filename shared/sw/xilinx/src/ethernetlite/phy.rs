@@ -6,6 +6,13 @@ use super::regs::*;
 
 #[bitsize(1)]
 #[derive(FromBits, Debug, Clone, Copy)]
+pub enum PhyDuplex {
+    Half = 0,
+    Full = 1,
+}
+
+#[bitsize(1)]
+#[derive(FromBits, Debug, Clone, Copy)]
 pub enum PhySpeed {
     Speed10M = 0,
     Speed100M = 1,
@@ -14,7 +21,9 @@ pub enum PhySpeed {
 #[bitsize(16)]
 #[derive(DebugBits, Clone, Copy, FromBits)]
 pub struct PhyControlReg {
-    reserved: u13,
+    reserved: u8,
+    duplex: PhyDuplex,
+    reserved: u4,
     speed: PhySpeed,
     loopback: bool,
     reset: bool,
@@ -149,15 +158,23 @@ impl<'a> Phy<'a> {
         PhyStatusReg::from(self.read(PhyStatusReg::ADDR))
     }
 
-    pub fn configure_loopback(&mut self, speed: PhySpeed) {
+    pub fn configure(&mut self, speed: PhySpeed, duplex: PhyDuplex) {
         // Set speed and put phy in reset.
-        self.write_control(PhyControlReg::new(speed, false, true));
+        self.write_control(PhyControlReg::new(duplex, speed, false, true));
+
+        // Delay for phy to reset.
+        delay_ms(4000);
+    }
+
+    pub fn configure_loopback(&mut self, speed: PhySpeed, duplex: PhyDuplex) {
+        // Set speed and put phy in reset.
+        self.write_control(PhyControlReg::new(duplex, speed, false, true));
 
         // Delay for phy to reset.
         delay_ms(4000);
 
         // Enable loopback.
-        self.write_control(PhyControlReg::new(speed, true, false));
+        self.write_control(PhyControlReg::new(duplex, speed, true, false));
 
         // Delay for loopback to enable.
         delay_ms(1000);

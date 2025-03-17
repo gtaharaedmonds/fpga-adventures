@@ -140,15 +140,20 @@ impl EthernetLite {
 
     pub fn try_receive_frame(&mut self) -> Result<PacketBuffer, ()> {
         if self.rx_done() {
-            Ok(self.regs.rx_buffer.read_aligned())
+            let frame = self.regs.rx_buffer.read_aligned();
+            self.flush_receive();
+            Ok(frame)
         } else {
             Err(())
         }
     }
 
     pub fn receive_frame(&mut self) -> PacketBuffer {
-        while !self.rx_done() {}
-        self.regs.rx_buffer.read_aligned()
+        loop {
+            if let Ok(frame) = self.try_receive_frame() {
+                return frame;
+            }
+        }
     }
 
     pub fn flush_receive(&mut self) {
