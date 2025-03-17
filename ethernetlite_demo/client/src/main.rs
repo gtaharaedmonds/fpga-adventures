@@ -1,63 +1,70 @@
 use pnet::datalink::Channel::Ethernet;
 use pnet::datalink::{self, NetworkInterface};
-use pnet::packet::ethernet::{EthernetPacket, MutableEthernetPacket};
-use pnet::packet::{MutablePacket, Packet};
+use pnet::packet::Packet;
+use pnet::packet::ethernet::{EtherType, EthernetPacket, MutableEthernetPacket};
+use pnet::util::MacAddr;
 
 use std::env;
+use std::str::FromStr;
 
-// Invoke as echo <interface name>
+const SERVER_MAC: &str = "00:0A:35:01:02:03";
+
 fn main() {
-    let interfaces: Vec<NetworkInterface> = datalink::interfaces();
-    interfaces.iter().for_each(|interface| {
-        println!("{:?}", interface);
-    });
-
     let interface_name = env::args().nth(1).unwrap();
+    let message = env::args().nth(2).unwrap();
+
+    let interfaces: Vec<NetworkInterface> = datalink::interfaces();
     let interface_names_match = |iface: &NetworkInterface| iface.name == interface_name;
 
-    // Find the network interface with the provided name
+    // Find the network interface with the provided name.
     let interface = interfaces
         .into_iter()
         .filter(interface_names_match)
         .next()
         .unwrap();
 
-    // Create a new channel, dealing with layer 2 packets
+    // Create a new channel, dealing with layer 2 packets.
     let (mut tx, mut rx) = match datalink::channel(&interface, Default::default()) {
         Ok(Ethernet(tx, rx)) => (tx, rx),
         Ok(_) => panic!("Unhandled channel type"),
         Err(e) => panic!(
-            "An error occurred when creating the datalink channel: {}",
+            "An error occurred when creating the datalink channel: {:?}",
             e
         ),
     };
 
+    println!("Sending message...");
+
+    let server_addr = MacAddr::from_str(SERVER_MAC).unwrap();
+    tx.build_and_send(
+        1,
+        EthernetPacket::minimum_packet_size() + message.len(),
+        &mut |new_packet| {
+            let mut new_packet = MutableEthernetPacket::new(new_packet).unwrap();
+
+            new_packet.set_source(interface.mac.unwrap());
+            new_packet.set_destination(server_addr);
+
+            new_packet.set_ethertype(EtherType(message.len() as u16));
+            new_packet.set_payload(message.as_bytes());
+        },
+    );
+
+    println!("Sent message!");
+    println!("Waiting for echo...");
+
+    let mut packet;
     loop {
-        match rx.next() {
-            Ok(packet) => {
-                let packet = EthernetPacket::new(packet).unwrap();
+        let echo = rx.next().unwrap();
+        packet = EthernetPacket::new(echo).unwrap();
 
-                // Constructs a single packet, the same length as the one received,
-                // using the provided closure. This allows the packet to be constructed
-                // directly in the write buffer, without copying. If copying is not a
-                // problem, you could also use send_to.
-                //
-                // The packet is sent once the closure has finished executing.
-                tx.build_and_send(1, packet.packet().len(), &mut |new_packet| {
-                    let mut new_packet = MutableEthernetPacket::new(new_packet).unwrap();
-
-                    // Create a clone of the original packet
-                    new_packet.clone_from(&packet);
-
-                    // Switch the source and destination
-                    new_packet.set_source(packet.get_destination());
-                    new_packet.set_destination(packet.get_source());
-                });
-            }
-            Err(e) => {
-                // If an error occurs, we can handle it here
-                panic!("An error occurred while reading: {}", e);
-            }
+        if packet.get_source() == server_addr {
+            break;
         }
     }
+
+    println!(
+        "Got echo! {:?}",
+        core::str::from_utf8(packet.payload()).unwrap()
+    );
 }
