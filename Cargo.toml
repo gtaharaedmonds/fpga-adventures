@@ -3,7 +3,8 @@ members = [
     "neorv32_demo/sw",
     "shared/sw/neorv32",
     "ethernetlite_demo/sw",
+    "tpu/sw",
     "shared/sw/xilinx",
-    "ethernetlite_demo/client",
+    # "ethernetlite_demo/client",
 ]
 resolver = "3"
