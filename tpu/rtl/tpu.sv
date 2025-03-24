@@ -23,15 +23,15 @@ module tpu (
     output logic [0:0] eth_rst_n
 );
 
-    logic eth_mdio_mdio_o, eth_mdio_mdio_i, eth_mdio_mdio_t;
+  logic eth_mdio_mdio_o, eth_mdio_mdio_i, eth_mdio_mdio_t;
 
-    IOBUF eth_mdio_mdio_iobuf (
-        .I (eth_mdio_mdio_o),
-        .IO(eth_mdio_mdio_io),
-        .O (eth_mdio_mdio_i),
-        .T (eth_mdio_mdio_t)
-    );
+  IOBUF eth_mdio_mdio_iobuf (
+      .I (eth_mdio_mdio_o),
+      .IO(eth_mdio_mdio_io),
+      .O (eth_mdio_mdio_i),
+      .T (eth_mdio_mdio_t)
+  );
 
-    neorv32_system neorv32_system_unit (.*);
+  neorv32_system neorv32_system_unit (.*);
 
 endmodule
