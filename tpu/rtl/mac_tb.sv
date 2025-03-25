@@ -37,7 +37,7 @@ module mac_tb;
     // Do a multiply-accumulate.
     data_in = 8'd94;
     run = 1;
-    #20;  // 2x clock cycle latency
+    #10;
 
     assert (acc_out == 32'd5358)
     else $error("Assert failed!");

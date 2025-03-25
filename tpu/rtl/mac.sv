@@ -23,16 +23,13 @@ module mac (
   logic [7:0] weight_buf[2];
   logic active_weight;
 
-  logic [7:0] data_in_buf;
-  logic [31:0] acc_in_buf;
-
   always_ff @(posedge clk or negedge rst_n) begin
     if (~rst_n) begin
       weight_buf[0] <= 0;
       weight_buf[1] <= 0;
     end else if (load_weight) begin
       weight_buf[~active_weight] <= weight_in;
-      weight_out <= weight_buf[~active_weight];
+      weight_out <= weight_in;
     end
   end
 
@@ -46,21 +43,11 @@ module mac (
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (~rst_n) begin
-      data_in_buf <= 0;
-      acc_in_buf  <= 0;
-    end else if (run) begin
-      data_in_buf <= data_in;
-      acc_in_buf  <= acc_in;
-    end
-  end
-
-  always_ff @(posedge clk or negedge rst_n) begin
-    if (~rst_n) begin
       acc_out  <= 0;
       data_out <= 0;
     end else if (run) begin
-      acc_out  <= weight_buf[active_weight] * data_in_buf + acc_in_buf;
-      data_out <= data_in_buf;
+      acc_out  <= weight_buf[active_weight] * data_in + acc_in;
+      data_out <= data_in;
     end
   end
 

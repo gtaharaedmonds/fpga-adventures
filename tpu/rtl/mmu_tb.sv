@@ -13,8 +13,9 @@ module mmu_tb;
 
   logic acc_out_rdy, acc_out_pop;
   logic [31:0] acc_out[SIZE][SIZE];
+  logic [31:0] out_expected[SIZE][SIZE];
 
-  logic weight_ld_rdy, weight_ld_start;
+  logic weight_ld_rdy, weight_ld_start, weight_swap;
   logic mult_rdy, mult_run;
 
   mmu uut (.*);
@@ -32,6 +33,7 @@ module mmu_tb;
     acc_out_pop = 0;
     weight_ld_rdy = 0;
     weight_ld_start = 0;
+    weight_swap = 0;
     mult_rdy = 0;
     mult_run = 0;
 
@@ -44,7 +46,7 @@ module mmu_tb;
     // Push new weights into the FIFO.
     assert (new_weight_rdy)
     else $error("Assert failed!");
-    new_weight_in   = '{'{8'h11, 8'h12}, '{8'h21, 8'h22}};
+    new_weight_in   = '{'{8'h1, 8'h2}, '{8'h3, 8'h4}};
     new_weight_push = 1;
     #10;
     new_weight_push = 0;
@@ -57,6 +59,33 @@ module mmu_tb;
     #10;
     weight_ld_start = 0;
     #100;
+
+    // Push new data into the data FIFO.
+    assert (data_in_rdy)
+    else $error("Assert failed!");
+    data_in = '{'{8'h5, 8'h6}, '{8'h7, 8'h8}};
+    data_in_push = 1;
+    #10;
+    data_in_push = 0;
+    #100;
+
+    // Swap weights.
+    weight_swap = 1;
+    #10;
+    weight_swap = 0;
+    #10;
+
+    // Run matrix multiplication!
+    assert (mult_rdy)
+    else $error("Assert failed!");
+    mult_run = 1;
+    #10;
+    mult_run = 0;
+    #200;
+
+    out_expected = '{'{8'h13, 8'h16}, '{8'h2B, 8'h32}};
+    assert (acc_out == out_expected)
+    else $error("Assert failed!");
 
     // Stop sim.
     $stop;
