@@ -1,4 +1,5 @@
 module tile_fifo #(
+    parameter BITS  = 8,
     parameter SIZE  = 2,
     parameter DEPTH = 3
 ) (
@@ -12,14 +13,14 @@ module tile_fifo #(
     output logic pop_rdy,
 
     // Data input.
-    input logic [7:0] din[SIZE][SIZE],
+    input logic [BITS-1:0] din[SIZE][SIZE],
 
     // Data output.
-    output logic [7:0] dout[SIZE][SIZE],
+    output logic [BITS-1:0] dout[SIZE][SIZE],
     output logic [$clog2(DEPTH + 1) - 1:0] count
 );
   logic [$clog2(DEPTH + 1) - 1:0] head, tail, count_pad;
-  logic [7:0] fifo_buf[DEPTH + 1][SIZE][SIZE];
+  logic [BITS-1:0] fifo_buf[DEPTH + 1][SIZE][SIZE];
   logic full, empty;
 
   assign full = (tail + 1 == head);
