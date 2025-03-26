@@ -231,7 +231,7 @@ module mmu #(
       MMU_STATE_DATA_POP_1: next_state = MMU_STATE_DATA_POP_2;
       MMU_STATE_DATA_POP_2: next_state = MMU_STATE_RUN;
       MMU_STATE_RUN: begin
-        if (mult_count > (2 * SIZE)) next_state = MMU_STATE_OUT_PUSH_1;
+        if (mult_count > (3 * SIZE - 2)) next_state = MMU_STATE_OUT_PUSH_1;
         else next_state = cur_state;
       end
       MMU_STATE_OUT_PUSH_1: next_state = MMU_STATE_OUT_PUSH_2;

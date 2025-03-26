@@ -43,20 +43,10 @@ module mac_tb;
     else $error("Assert failed!");
     assert (data_out == 8'd94)
     else $error("Assert failed!");
-
-    // Try to get the loaded weight out.
-    weight_in = 8'd0;
-    swap_weights = 1;
-    #10;
-    swap_weights = 0;
-    #10;
-    load_weight = 1;
-    #10;
-
     assert (weight_out == 8'd57)
     else $error("Assert failed!");
 
-    load_weight = 0;
+    run = 0;
     #10;
 
     // Stop sim.

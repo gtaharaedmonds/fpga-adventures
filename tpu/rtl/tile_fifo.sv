@@ -21,21 +21,17 @@ module tile_fifo #(
 );
   logic [$clog2(DEPTH + 1) - 1:0] head, tail, count_pad;
   logic [BITS-1:0] fifo_buf[DEPTH + 1][SIZE][SIZE];
-  logic full, empty;
-
-  assign full = (tail + 1 == head);
-  assign empty = tail == head;
-
-  assign push_rdy = ~full;
-  assign pop_rdy = ~empty;
 
   assign count = (tail >= head) ? (tail - head) : (DEPTH - head + tail + 1);
+
+  assign push_rdy = count < DEPTH;
+  assign pop_rdy = count > 0;
 
   always_ff @(posedge clk or negedge rst_n) begin
     if (~rst_n) begin
       tail <= 0;
     end else begin
-      if (~full && push) begin
+      if (push_rdy && push) begin
         fifo_buf[tail] <= din;
         tail <= tail + 1;
       end
@@ -46,7 +42,7 @@ module tile_fifo #(
     if (~rst_n) begin
       head <= 0;
     end else begin
-      if (~empty && pop) begin
+      if (pop_rdy && pop) begin
         dout <= fifo_buf[head];
         head <= head + 1;
       end

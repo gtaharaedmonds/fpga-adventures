@@ -1,19 +1,19 @@
-module mmu_256x256 (
+module mmu_8x8 (
     input logic rst_n,
     input logic clk,
 
     // Push a new weight into the weight FIFO.
-    input logic [7:0] new_weight_in[SIZE][SIZE],
+    input logic [7:0] new_weight_in[8][8],
     output logic new_weight_rdy,
     input logic new_weight_push,
 
     // Push new activations into the data FIFO.
-    input logic [7:0] data_in[SIZE][SIZE],
+    input logic [7:0] data_in[8][8],
     output logic data_in_rdy,
     input logic data_in_push,
 
     // Pop new results off the result FIFO.
-    output logic [31:0] acc_out[SIZE][SIZE],
+    output logic [31:0] acc_out[8][8],
     output logic acc_out_rdy,
     input logic acc_out_pop,
 
@@ -30,10 +30,10 @@ module mmu_256x256 (
 );
 
   mmu #(
-      .SIZE(256),
-      .WEIGHT_FIFO_DEPTH(8),
-      .DATA_FIFO_DEPTH(8),
-      .OUT_FIFO_DEPTH(8)
+      .SIZE(8),
+      .WEIGHT_FIFO_DEPTH(3),
+      .DATA_FIFO_DEPTH(3),
+      .OUT_FIFO_DEPTH(3)
   ) mmu_unit (
       .*
   );

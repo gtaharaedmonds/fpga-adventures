@@ -70,6 +70,7 @@ module tile_fifo_tb;
       pop = 1;
       #10;
       pop = 0;
+      #10;
       assert (count == 3 - i && push_rdy == 1 && pop_rdy == (i < 3))
       else $error("Assert failed!");
 
