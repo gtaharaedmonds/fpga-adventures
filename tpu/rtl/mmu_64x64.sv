@@ -1,19 +1,21 @@
-module mmu_8x8 (
+localparam N = 64;
+
+module mmu_64x64 (
     input logic rst_n,
     input logic clk,
 
     // Push a new weight into the weight FIFO.
-    input logic [7:0] new_weight_in[8][8],
+    input logic [7:0] new_weight_in[N][N],
     output logic new_weight_rdy,
     input logic new_weight_push,
 
     // Push new activations into the data FIFO.
-    input logic [7:0] data_in[8][8],
+    input logic [7:0] data_in[N][N],
     output logic data_in_rdy,
     input logic data_in_push,
 
     // Pop new results off the result FIFO.
-    output logic [31:0] acc_out[8][8],
+    output logic [31:0] acc_out[N][N],
     output logic acc_out_rdy,
     input logic acc_out_pop,
 
@@ -30,7 +32,7 @@ module mmu_8x8 (
 );
 
   mmu #(
-      .SIZE(8),
+      .SIZE(N),
       .WEIGHT_FIFO_DEPTH(3),
       .DATA_FIFO_DEPTH(3),
       .OUT_FIFO_DEPTH(3)
