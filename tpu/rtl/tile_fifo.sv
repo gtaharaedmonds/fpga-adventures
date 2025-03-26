@@ -35,7 +35,7 @@ module tile_fifo #(
     if (~rst_n) begin
       tail <= 0;
     end else begin
-      if (!full && push) begin
+      if (~full && push) begin
         fifo_buf[tail] <= din;
         tail <= tail + 1;
       end
@@ -46,7 +46,7 @@ module tile_fifo #(
     if (~rst_n) begin
       head <= 0;
     end else begin
-      if (!empty && pop) begin
+      if (~empty && pop) begin
         dout <= fifo_buf[head];
         head <= head + 1;
       end

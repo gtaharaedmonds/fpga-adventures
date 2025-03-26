@@ -30,7 +30,7 @@ module mmu #(
 
     // Run a matrix multiplication.
     output logic mult_rdy,
-    input  logic mult_run,
+    input  logic mult_start,
     output logic mult_done
 );
 
@@ -210,7 +210,8 @@ module mmu #(
     MMU_STATE_DATA_POP_1,
     MMU_STATE_DATA_POP_2,
     MMU_STATE_RUN,
-    MMU_STATE_OUT_PUSH,
+    MMU_STATE_OUT_PUSH_1,
+    MMU_STATE_OUT_PUSH_2,
     MMU_STATE_DONE
   } mmu_state_t;
 
@@ -224,16 +225,18 @@ module mmu #(
   always_comb begin
     case (cur_state)
       MMU_STATE_IDLE: begin
-        if (mult_rdy && mult_run) next_state = MMU_STATE_DATA_POP_1;
+        if (mult_rdy && mult_start) next_state = MMU_STATE_DATA_POP_1;
         else next_state = cur_state;
       end
       MMU_STATE_DATA_POP_1: next_state = MMU_STATE_DATA_POP_2;
       MMU_STATE_DATA_POP_2: next_state = MMU_STATE_RUN;
       MMU_STATE_RUN: begin
-        if (mult_count > (2 * SIZE)) next_state = MMU_STATE_OUT_PUSH;
+        if (mult_count > (2 * SIZE)) next_state = MMU_STATE_OUT_PUSH_1;
         else next_state = cur_state;
       end
-      MMU_STATE_OUT_PUSH:   next_state = MMU_STATE_IDLE;
+      MMU_STATE_OUT_PUSH_1: next_state = MMU_STATE_OUT_PUSH_2;
+      MMU_STATE_OUT_PUSH_2: next_state = MMU_STATE_DONE;
+      MMU_STATE_DONE: next_state = MMU_STATE_IDLE;
       default: begin
         next_state = MMU_STATE_IDLE;
       end
@@ -248,7 +251,7 @@ module mmu #(
     case (cur_state)
       MMU_STATE_DATA_POP_1: data_fifo_pop = 1;
       MMU_STATE_RUN: mmu_arr_run = 1;
-      MMU_STATE_OUT_PUSH: acc_out_fifo_push = 1;
+      MMU_STATE_OUT_PUSH_2: acc_out_fifo_push = 1;
       default: begin
         data_fifo_pop = 0;
         mmu_arr_run = 0;
@@ -282,7 +285,8 @@ module mmu #(
         end else begin
           case (next_state)
             MMU_STATE_RUN:
-            if ((mult_count < row) || ((mult_count - row) >= SIZE)) mmu_arr_din[row] <= 0;
+            if ((row > 0 && mult_count < row) || ((mult_count - row) >= SIZE))
+              mmu_arr_din[row] <= 0;
             else mmu_arr_din[row] <= data_fifo_out[row][mult_count-row];
             default: mmu_arr_din[row] <= 0;
           endcase

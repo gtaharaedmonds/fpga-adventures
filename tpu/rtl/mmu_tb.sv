@@ -16,7 +16,7 @@ module mmu_tb;
   logic [31:0] out_expected[SIZE][SIZE];
 
   logic weight_ld_rdy, weight_ld_start, weight_ld_done, weight_swap;
-  logic mult_rdy, mult_run, mult_done;
+  logic mult_rdy, mult_start, mult_done;
 
   mmu uut (.*);
 
@@ -35,7 +35,7 @@ module mmu_tb;
     weight_ld_start = 0;
     weight_swap = 0;
     mult_rdy = 0;
-    mult_run = 0;
+    mult_start = 0;
 
     // Reset DUT.
     rst_n = 0;
@@ -59,6 +59,7 @@ module mmu_tb;
     #10;
     weight_ld_start = 0;
     wait (weight_ld_done == 1);
+    #10;
 
     // Swap weights.
     weight_swap = 1;
@@ -78,10 +79,11 @@ module mmu_tb;
     // Run matrix multiplication!
     assert (mult_rdy && !mult_done)
     else $error("Assert failed!");
-    mult_run = 1;
+    mult_start = 1;
     #10;
-    mult_run = 0;
+    mult_start = 0;
     wait (mult_done == 1);
+    #10;
 
     // Pop output off FIFO.
     assert (acc_out_rdy)
