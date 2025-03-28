@@ -23,6 +23,43 @@ module tpu (
     output logic [0:0] eth_rst_n
 );
 
+  localparam integer S_AXI_DATA_WIDTH = 32;
+  localparam integer S_AXI_ADDR_WIDTH = 4;
+  localparam integer NUM_WORDS = 4;
+
+  // Global signals.
+  logic s_axi_aclk, s_axi_aresetn;
+
+  // Write address channel.
+  logic [S_AXI_ADDR_WIDTH-1:0] s_axi_awaddr;
+  logic [2:0] s_axi_awprot;
+  logic s_axi_awvalid;
+  logic s_axi_awready;
+
+  // Write data channel.
+  logic [S_AXI_DATA_WIDTH-1:0] s_axi_wdata;
+  logic [(S_AXI_DATA_WIDTH/8)-1:0] s_axi_wstrb;
+  logic s_axi_wvalid;
+  logic s_axi_wready;
+
+  // Write response channel.
+  logic [1:0] s_axi_bresp;
+  logic s_axi_bvalid;
+  logic s_axi_bready;
+
+  // Read address channel.
+  logic [S_AXI_ADDR_WIDTH-1:0] s_axi_araddr;
+  logic [2:0] s_axi_arprot;
+  logic s_axi_arvalid;
+  logic s_axi_arready;
+
+  // Read data/response channel.
+  logic [S_AXI_DATA_WIDTH-1:0] s_axi_rdata;
+  logic [1:0] s_axi_rresp;
+  logic s_axi_rvalid;
+  logic s_axi_rready;
+
+  // Ethernet signals.
   logic eth_mdio_mdio_o, eth_mdio_mdio_i, eth_mdio_mdio_t;
 
   IOBUF eth_mdio_mdio_iobuf (
@@ -33,5 +70,7 @@ module tpu (
   );
 
   neorv32_system neorv32_system_unit (.*);
+
+  mmu_axi mmu_axi_unit (.*);
 
 endmodule

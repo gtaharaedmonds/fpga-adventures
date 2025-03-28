@@ -1,6 +1,7 @@
 module axi_if #(
     parameter integer S_AXI_DATA_WIDTH = 32,
-    parameter integer S_AXI_ADDR_WIDTH = 4
+    parameter integer S_AXI_ADDR_WIDTH = 4,
+    parameter integer NUM_WORDS = 4
 ) (
     // Global signals.
     input wire s_axi_aclk,
@@ -36,7 +37,9 @@ module axi_if #(
     input wire s_axi_rready
 );
 
-  reg [S_AXI_DATA_WIDTH-1:0] regval;
+  localparam integer NUM_BYTES_PER_DATA_WORD = S_AXI_DATA_WIDTH / 8;
+
+  reg [S_AXI_DATA_WIDTH-1:0] mmap[0:(NUM_WORDS-1)];
 
   /*
    * Write interface.
@@ -57,7 +60,6 @@ module axi_if #(
 
   always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
     if (~s_axi_aresetn) begin
-      regval <= 0;
       waddr <= 0;
       wdata <= 0;
       wstrb <= 0;
@@ -80,7 +82,7 @@ module axi_if #(
               awready <= 0;
               wdata <= s_axi_wdata;
               wready <= 0;
-              bvalid <= 1;
+              bvalid <= 1;  // Set valid response
               wr_state <= WR_STORE;
             end else begin
               // Got addr but waiting for data, jump to data.
@@ -96,15 +98,14 @@ module axi_if #(
             wdata <= s_axi_wdata;
             wstrb <= s_axi_wstrb;
             wready <= 0;
-            bvalid <= 1;
+            bvalid <= 1;  // Set valid response
             wr_state <= WR_STORE;
           end
         end
         WR_STORE: begin
-          regval   <= wdata;
           awready  <= 1;
           wready   <= 1;
-          bvalid   <= 0;
+          bvalid   <= 0;  // Clear valid response
           wr_state <= WR_ADDR;
         end
         default: begin
@@ -114,6 +115,23 @@ module axi_if #(
     end
   end
 
+  genvar i;
+  generate
+    for (i = 0; i < NUM_BYTES_PER_DATA_WORD; i = i + 1) begin
+      always @(posedge s_axi_aclk or negedge s_axi_aresetn) begin
+        if (~s_axi_aresetn) begin
+          mmap[waddr] <= 0;
+        end else begin
+          if (wr_state == WR_STORE) begin
+            // if (wstrb[i]) begin
+            mmap[waddr] <= wdata;
+            // end
+          end
+        end
+      end
+    end
+  endgenerate
+
   /*
    * Read interface.
    */
@@ -121,7 +139,7 @@ module axi_if #(
   localparam RD_INIT = 2'b00, RD_ADDR = 2'b01, RD_FETCH = 2'b10, RD_DATA = 2'b11;
   reg [2:0] rd_state;
 
-  reg [S_AXI_ADDR_WIDTH-1:0] rd_addr;
+  reg [S_AXI_ADDR_WIDTH-1:0] araddr;
   reg rvalid, arready;
   reg [S_AXI_DATA_WIDTH-1:0] rdata;
 
@@ -144,13 +162,13 @@ module axi_if #(
         end
         RD_ADDR: begin
           if (s_axi_arvalid) begin
-            rd_addr  <= s_axi_araddr;
+            araddr   <= s_axi_araddr;
             arready  <= 0;
             rd_state <= RD_FETCH;
           end
         end
         RD_FETCH: begin
-          rdata <= regval;
+          rdata <= mmap[araddr];
           rvalid <= 1;
           rd_state <= RD_DATA;
         end
