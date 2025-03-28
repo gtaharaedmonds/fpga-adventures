@@ -25,6 +25,13 @@ fn main() -> ! {
     init_uart_print(uart);
     println!("Initialized UART printing");
 
+    for i in 0u32..10 {
+        let addr = (0xF001_0000) as *mut u32;
+        unsafe { core::ptr::write_volatile(addr, 19 + i) };
+        let val = unsafe { core::ptr::read_volatile(addr) };
+        println!("Memory read after write: {}", val);
+    }
+
     clint.init();
     println!("Initialized CLINT timer");
 
